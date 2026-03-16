@@ -9,4 +9,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:sanctum'])->get('/schemas', [SchemaController::class, 'index']);
+
+Route::middleware(['auth:sanctum'])->post('/schemas', [SchemaController::class, 'store']);
+
 require __DIR__.'/auth.php';

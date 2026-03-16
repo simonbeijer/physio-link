@@ -20,6 +20,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'vue-router'
+import { apiFetch } from '@/lib/api.js'
 const router = useRouter()
 
 const email = ref('')
@@ -28,12 +29,8 @@ const error = ref('')
 
 async function login() {
     try {
-        const response = await fetch('http://localhost:8080/api/login', {
+        const response = await apiFetch('/api/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
             body: JSON.stringify({ email: email.value, password: password.value })
         })
 
@@ -44,7 +41,6 @@ async function login() {
             return
         }
 
-        localStorage.setItem('token', data.token)
         router.push('/dashboard')
     } catch (e) {
         error.value = 'Något gick fel'

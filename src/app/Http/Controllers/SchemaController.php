@@ -11,4 +11,12 @@ class SchemaController extends Controller
         $schema = auth()->user()->schemas;
         return response()->json(["schema" => $schema]);
     }
+
+    public function store(Request $request) {
+        $schema = auth()->user()->schemas()->create([
+            "name" => $request->name,
+            'share_token' => \Str::uuid()
+        ]);
+        return response()->json($schema, 201);
+    }
 }
