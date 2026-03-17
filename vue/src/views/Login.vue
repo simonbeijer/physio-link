@@ -41,6 +41,7 @@ async function login() {
             return
         }
 
+        localStorage.setItem('token', data.token)
         router.push('/dashboard')
     } catch (e) {
         error.value = 'Något gick fel'
