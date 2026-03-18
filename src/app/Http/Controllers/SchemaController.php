@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\StoreSchemaRequest;
 use Illuminate\Http\Request;
 
 class SchemaController extends Controller
 {
     public function index()
     {
-        $schema = auth()->user()->schemas;
-        return response()->json(["schema" => $schema]);
+        $schemas = auth()->user()->schemas;
+        return response()->json(["schema" => $schemas]);
     }
 
-    public function store(Request $request) {
+    public function store(StoreSchemaRequest $request) {
         $schema = auth()->user()->schemas()->create([
             "name" => $request->name,
             'share_token' => \Str::uuid()

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExerciseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchemaController;
@@ -11,5 +12,9 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::middleware(['auth:sanctum'])->get('/schemas', [SchemaController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->post('/schemas', [SchemaController::class, 'store']);
+
+Route::middleware(['auth:sanctum'])->get('/exercises', [ExerciseController::class, 'index']);
+
+Route::middleware(['auth:sanctum'])->post('/exercises', [ExerciseController::class, 'store']);
 
 require __DIR__.'/auth.php';

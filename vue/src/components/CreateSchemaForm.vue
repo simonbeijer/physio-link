@@ -6,6 +6,7 @@
         <CardDescription>Skapa nytt schema</CardDescription>
       </CardHeader>
       <CardContent>
+        <label class="text-sm font-medium">Namn</label>
         <Input name="name" type="text" v-model="name" />
       </CardContent>
       <CardFooter>
