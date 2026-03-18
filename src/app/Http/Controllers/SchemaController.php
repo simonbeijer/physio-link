@@ -9,7 +9,7 @@ class SchemaController extends Controller
     public function index()
     {
         $schemas = auth()->user()->schemas;
-        return response()->json(["schema" => $schemas]);
+        return response()->json(["schemas" => $schemas]);
     }
 
     public function store(StoreSchemaRequest $request) {
