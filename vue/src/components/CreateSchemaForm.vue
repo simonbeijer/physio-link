@@ -1,36 +1,36 @@
 <template>
-  <div style="width: 200px;">
-    <Card>
-      <CardHeader>
-        <CardTitle>Skapa</CardTitle>
-        <CardDescription>Skapa nytt schema</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <label class="text-sm font-medium">Namn</label>
-        <Input name="name" type="text" v-model="name" />
-      </CardContent>
-      <CardFooter>
-        <Button @click="createSchema">Skapa</Button>
-      </CardFooter>
-    </Card>
+  <div class="flex items-end gap-3 p-4 bg-blue-100/50 rounded-lg border border-blue-200">
+    <div class="flex-grow">
+      <label class="block text-xs font-semibold text-blue-900 uppercase tracking-wider mb-1 ml-1">Schema Namn</label>
+      <Input 
+        name="name" 
+        type="text" 
+        v-model="name" 
+        placeholder="Ex: Rehab Knä" 
+        class="bg-white border-blue-200 focus-visible:ring-blue-500"
+      />
+    </div>
+    <Button 
+      @click="createSchema" 
+      class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6"
+      :disabled="!name"
+    >
+      Skapa
+    </Button>
   </div>
 </template>
+
 <script setup>
-import Button from '@/components/ui/button/Button.vue';
-import {
-  Card, CardHeader
-  , CardTitle
-  , CardDescription
-  , CardContent
-  , CardFooter
-} from '@/components/ui/card';
-import Input from '@/components/ui/input/Input.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { apiFetch } from '@/lib/api.js'
 import { ref } from 'vue'
 
 const name = ref('')
+const emit = defineEmits(['schemaCreated'])
 
 async function createSchema() {
+  if (!name.value) return
 
   try {
     const response = await apiFetch('/api/schemas', {
@@ -38,16 +38,13 @@ async function createSchema() {
       body: JSON.stringify({ name: name.value })
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return
-    }
-    console.log("DATA", data)
+    if (!response.ok) return
+    
+    name.value = ''
+    emit('schemaCreated')
 
   } catch (error) {
-    error.value = 'Något gick fel'
+    console.error('Något gick fel', error)
   }
-
 }
 </script>

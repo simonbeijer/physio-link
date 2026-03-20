@@ -1,37 +1,65 @@
 <template>
-  <div style="width: 200px;">
-    <Card>
-      <CardHeader>
-        <CardTitle>Skapa</CardTitle>
-        <CardDescription>Skapa ny övning</CardDescription>
-      </CardHeader>
-      <CardContent class="flex flex-col gap-2">
-          <label class="text-sm font-medium">Namn</label>
-          <Input type="text" v-model="name" placeholder="Ex: Knäböj" />
+  <div class="p-5 bg-green-100/50 rounded-lg border border-green-200 space-y-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Övningsnamn</label>
+        <Input 
+          type="text" 
+          v-model="name" 
+          placeholder="Ex: Knäböj" 
+          class="bg-white border-green-200 focus-visible:ring-green-500"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">YouTube-länk</label>
+        <Input 
+          type="text" 
+          v-model="youtube_url" 
+          placeholder="https://youtube.com/..." 
+          class="bg-white border-green-200 focus-visible:ring-green-500"
+        />
+      </div>
+    </div>
 
-          <label class="text-sm font-medium">YouTube-länk</label>
-          <Input type="text" v-model="youtube_url" placeholder="https://youtube.com/..." />
-
-          <label class="text-sm font-medium">Starttid (sekunder)</label>
-          <Input type="number" v-model="start_time" />
-
-          <label class="text-sm font-medium">Sluttid (sekunder)</label>
-          <Input type="number" v-model="end_time" />
-
-          <label class="text-sm font-medium">Timer (sekunder)</label>
-          <Input type="number" v-model="timer_duration" />
-      </CardContent>
-      <CardFooter>
-        <Button @click="createExercise">Skapa</Button>
-      </CardFooter>
-    </Card>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+      <div>
+        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Start (sek)</label>
+        <Input 
+          type="number" 
+          v-model="start_time" 
+          class="bg-white border-green-200 focus-visible:ring-green-500"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Slut (sek)</label>
+        <Input 
+          type="number" 
+          v-model="end_time" 
+          class="bg-white border-green-200 focus-visible:ring-green-500"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Timer (sek)</label>
+        <Input 
+          type="number" 
+          v-model="timer_duration" 
+          class="bg-white border-green-200 focus-visible:ring-green-500"
+        />
+      </div>
+      <Button 
+        @click="createExercise" 
+        class="bg-green-600 hover:bg-green-700 text-white font-medium"
+        :disabled="!name"
+      >
+        Spara övning
+      </Button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import Button from '@/components/ui/button/Button.vue';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import Input from '@/components/ui/input/Input.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { apiFetch } from '@/lib/api.js'
 import { ref } from 'vue'
 
@@ -41,7 +69,11 @@ const start_time = ref(0)
 const end_time = ref(0)
 const timer_duration = ref(0)
 
+const emit = defineEmits(['exerciseCreated'])
+
 async function createExercise() {
+  if (!name.value) return
+
   try {
     const response = await apiFetch('/api/exercises', {
       method: "POST",
@@ -54,11 +86,7 @@ async function createExercise() {
       })
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      return
-    }
+    if (!response.ok) return
 
     name.value = ''
     youtube_url.value = ''
@@ -66,7 +94,7 @@ async function createExercise() {
     end_time.value = 0
     timer_duration.value = 0
 
-    console.log("DATA", data)
+    emit('exerciseCreated')
 
   } catch (error) {
     console.error('Något gick fel', error)
