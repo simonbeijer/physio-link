@@ -16,7 +16,7 @@ class SchemaExerciseController extends Controller
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        $exercises = SchemaExercise::where('schema_id', $schema_id)
+        $exercises = $schema->exercises()
             ->orderBy('order')
             ->get();
 
@@ -31,10 +31,10 @@ class SchemaExerciseController extends Controller
             return response()->json(['message' => ' Unauthorized'], 401);
         }
 
-        SchemaExercise::where('schema_id', $schema_id)->delete();
+        $schema->exercises()->delete();
 
         foreach ($request->exercises as $item) {
-            SchemaExercise::create([
+            $schema->exercises()->create([
                 "schema_id" => $schema_id,
                 "exercise_id" => $item['exercise_id'],
                 "order" => $item['order'],
