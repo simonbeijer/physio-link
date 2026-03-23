@@ -10,7 +10,7 @@ class SchemaExerciseController extends Controller
 {
     public function index($schema_id)
     {
-        $schema = auth()->user()->schemas()->find($schema_id);
+        $schema = $this->verifyOwnership($schema_id);
 
         if (!$schema) {
             return response()->json(['message' => 'Not found'], 404);
@@ -25,6 +25,13 @@ class SchemaExerciseController extends Controller
     }
     public function store(StoreSchemaExerciseRequest $request, $schema_id)
     {
+        $schema = $this->verifyOwnership($schema_id);
+
+        if (!$schema) {
+            return response()->json(['message' => ' Unauthorized'], 401);
+        }
+
+        SchemaExercise::where('schema_id', $schema_id)->delete();
 
         foreach ($request->exercises as $item) {
             SchemaExercise::create([
@@ -37,5 +44,17 @@ class SchemaExerciseController extends Controller
         ;
 
         return response()->json(['message' => 'övning sparad'], 201);
+    }
+
+    private function verifyOwnership($schema_id)
+    {
+
+        $schema = auth()->user()->schemas()->find($schema_id);
+
+        if (!$schema) {
+            return false;
+        }
+
+        return $schema;
     }
 }
