@@ -1,51 +1,125 @@
 <template>
-  <div class="min-h-screen p-8" :class="selectedSchema ? 'max-w-6xl mx-auto' : 'max-w-2xl mx-auto'">
-    <div class="flex items-center justify-between mb-8">
-      <h1 class="text-2xl font-bold">{{ selectedSchema ? `Edit: ${selectedSchema.name}` : 'Dashboard' }}</h1>
-      <Button v-if="selectedSchema" variant="ghost" @click="selectedSchema = null">
-        ← Back to Dashboard
-      </Button>
-    </div>
+  <div class="min-h-screen bg-slate-50/50">
+    <!-- Top Navigation -->
+    <header class="border-b bg-white/80 backdrop-blur-md sticky top-0 z-10">
+      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">P</div>
+          <span class="font-bold text-xl tracking-tight text-slate-900">PhysioLink</span>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <Button variant="ghost" size="sm" class="text-slate-500 hover:text-slate-900" @click="handleLogout">
+            <LogOut class="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+      </div>
+    </header>
 
-    <!-- Edit Schema Exercises Mode -->
-    <div v-if="selectedSchema">
-      <SchemaExerciseSelector :schemaId="selectedSchema.id" />
-    </div>
-
-    <!-- Default Dashboard Mode -->
-    <template v-else>
-      <!-- Scheman -->
-      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-        <h2 class="text-lg font-semibold text-blue-800 mb-4">Scheman</h2>
-        <SchemasList :schemas="schemas" @edit="selectedSchema = $event" />
-        <Accordion type="single" collapsible class="mt-4">
-          <AccordionItem value="create-schema">
-            <AccordionTrigger class="text-blue-700">Skapa nytt schema</AccordionTrigger>
-            <AccordionContent>
-              <CreateSchemaForm @schemaCreated="getSchemas" />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Edit Mode Header -->
+      <div v-if="selectedSchema" class="mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Edit Schema</h1>
+          <p class="text-slate-500 text-lg mt-1">{{ selectedSchema.name }}</p>
+        </div>
+        <Button variant="outline" @click="selectedSchema = null" class="bg-white">
+          <ChevronLeft class="w-4 h-4 mr-2" />
+          Back to Dashboard
+        </Button>
       </div>
 
-      <!-- Övningar -->
-      <div class="bg-green-50 border border-green-200 rounded-xl p-6">
-        <h2 class="text-lg font-semibold text-green-800 mb-4">Övningar</h2>
-        <ExercisesList :exercises="exercises" />
-        <Accordion type="single" collapsible class="mt-4">
-          <AccordionItem value="create-exercise">
-            <AccordionTrigger class="text-green-700">Skapa ny övning</AccordionTrigger>
-            <AccordionContent>
-              <CreateExerciseForm @exerciseCreated="getExercises" />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      <!-- Default Mode Header -->
+      <div v-else class="mb-10">
+        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
+        <p class="text-slate-500 text-lg">Manage your exercise programs and share them with patients.</p>
       </div>
-    </template>
+
+      <!-- Content -->
+      <div v-if="selectedSchema" class="transition-all duration-300">
+        <div class="bg-white rounded-2xl border shadow-sm p-2 overflow-hidden">
+           <SchemaExerciseSelector :schemaId="selectedSchema.id" />
+        </div>
+      </div>
+
+      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Schemas Column -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
+                <LayoutDashboard class="w-5 h-5" />
+              </div>
+              <h2 class="text-xl font-bold text-slate-900">Your Schemas</h2>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
+            <SchemasList :schemas="schemas" @edit="selectedSchema = $event" />
+            
+            <Accordion type="single" collapsible class="mt-6 border-t pt-2">
+              <AccordionItem value="create-schema" class="border-none">
+                <AccordionTrigger class="py-4 text-blue-600 hover:no-underline font-medium hover:text-blue-700">
+                  <span class="flex items-center gap-2">
+                    <Plus class="w-4 h-4" />
+                    Create New Schema
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div class="pt-2">
+                    <CreateSchemaForm @schemaCreated="getSchemas" />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+
+        <!-- Exercises Column -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="p-2 bg-green-100 text-green-700 rounded-lg">
+                <Dumbbell class="w-5 h-5" />
+              </div>
+              <h2 class="text-xl font-bold text-slate-900">Exercise Library</h2>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
+            <ExercisesList :exercises="exercises" />
+            
+            <Accordion type="single" collapsible class="mt-6 border-t pt-2">
+              <AccordionItem value="create-exercise" class="border-none">
+                <AccordionTrigger class="py-4 text-green-600 hover:no-underline font-medium hover:text-green-700">
+                  <span class="flex items-center gap-2">
+                    <Plus class="w-4 h-4" />
+                    Add New Exercise to Library
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div class="pt-2">
+                    <CreateExerciseForm @exerciseCreated="getExercises" />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup>
+import { 
+  LogOut, 
+  LayoutDashboard, 
+  Dumbbell, 
+  Plus, 
+  ChevronLeft 
+} from 'lucide-vue-next'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import CreateExerciseForm from '@/components/CreateExerciseForm.vue';
@@ -53,7 +127,7 @@ import CreateSchemaForm from '@/components/CreateSchemaForm.vue';
 import ExercisesList from '@/components/ExercisesList.vue';
 import SchemasList from '@/components/SchemasList.vue';
 import SchemaExerciseSelector from '@/components/SchemaExerciseSelector.vue';
-import { apiFetch } from '@/lib/api.js'
+import { apiFetch, logout } from '@/lib/api.js'
 import { onMounted, ref } from 'vue'
 
 const exercises = ref([])
@@ -70,10 +144,9 @@ async function getSchemas() {
     const response = await apiFetch('/api/schemas')
     const data = await response.json()
 
-    if (!response.ok) {
-      return
+    if (response.ok) {
+      schemas.value = data.schemas
     }
-    schemas.value = data.schemas
   } catch (error) {
     console.error('Failed to get schemas:', error)
   }
@@ -84,12 +157,15 @@ async function getExercises() {
     const response = await apiFetch('/api/exercises')
     const data = await response.json()
 
-    if (!response.ok) {
-      return
+    if (response.ok) {
+      exercises.value = data.exercises
     }
-    exercises.value = data.exercises
   } catch (error) {
     console.error('Failed to get exercises:', error)
   }
+}
+
+function handleLogout() {
+  logout()
 }
 </script>
