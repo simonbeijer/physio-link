@@ -1,58 +1,63 @@
 <template>
-  <div class="p-5 bg-green-100/50 rounded-lg border border-green-200 space-y-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Övningsnamn</label>
-        <Input 
-          type="text" 
-          v-model="name" 
-          placeholder="Ex: Knäböj" 
-          class="bg-white border-green-200 focus-visible:ring-green-500"
-        />
+  <div class="space-y-2">
+    <div class="p-5 bg-green-100/50 rounded-lg border border-green-200 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Övningsnamn</label>
+          <Input 
+            type="text" 
+            v-model="name" 
+            placeholder="Ex: Knäböj" 
+            class="bg-white border-green-200 focus-visible:ring-green-500"
+            @keydown.enter="createExercise"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">YouTube-länk</label>
+          <Input 
+            type="text" 
+            v-model="youtube_url" 
+            placeholder="https://youtube.com/..." 
+            class="bg-white border-green-200 focus-visible:ring-green-500"
+            @keydown.enter="createExercise"
+          />
+        </div>
       </div>
-      <div>
-        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">YouTube-länk</label>
-        <Input 
-          type="text" 
-          v-model="youtube_url" 
-          placeholder="https://youtube.com/..." 
-          class="bg-white border-green-200 focus-visible:ring-green-500"
-        />
-      </div>
-    </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
-      <div>
-        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Start (sek)</label>
-        <Input 
-          type="number" 
-          v-model="start_time" 
-          class="bg-white border-green-200 focus-visible:ring-green-500"
-        />
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Start (sek)</label>
+          <Input 
+            type="number" 
+            v-model="start_time" 
+            class="bg-white border-green-200 focus-visible:ring-green-500"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Slut (sek)</label>
+          <Input 
+            type="number" 
+            v-model="end_time" 
+            class="bg-white border-green-200 focus-visible:ring-green-500"
+          />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Timer (sek)</label>
+          <Input 
+            type="number" 
+            v-model="timer_duration" 
+            class="bg-white border-green-200 focus-visible:ring-green-500"
+          />
+        </div>
+        <Button 
+          @click="createExercise" 
+          class="bg-green-600 hover:bg-green-700 text-white font-medium"
+          :disabled="!name || isLoading"
+        >
+          {{ isLoading ? 'Sparar...' : 'Spara övning' }}
+        </Button>
       </div>
-      <div>
-        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Slut (sek)</label>
-        <Input 
-          type="number" 
-          v-model="end_time" 
-          class="bg-white border-green-200 focus-visible:ring-green-500"
-        />
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Timer (sek)</label>
-        <Input 
-          type="number" 
-          v-model="timer_duration" 
-          class="bg-white border-green-200 focus-visible:ring-green-500"
-        />
-      </div>
-      <Button 
-        @click="createExercise" 
-        class="bg-green-600 hover:bg-green-700 text-white font-medium"
-        :disabled="!name"
-      >
-        Spara övning
-      </Button>
+      <p v-if="error" class="text-sm text-red-600 font-medium ml-1 mt-2">{{ error }}</p>
     </div>
   </div>
 </template>
@@ -69,10 +74,16 @@ const start_time = ref(0)
 const end_time = ref(0)
 const timer_duration = ref(0)
 
+const isLoading = ref(false)
+const error = ref('')
+
 const emit = defineEmits(['exerciseCreated'])
 
 async function createExercise() {
-  if (!name.value) return
+  if (!name.value || isLoading.value) return
+
+  isLoading.value = true
+  error.value = ''
 
   try {
     const response = await apiFetch('/api/exercises', {
@@ -86,7 +97,11 @@ async function createExercise() {
       })
     })
 
-    if (!response.ok) return
+    if (!response.ok) {
+      const data = await response.json()
+      error.value = data.message || 'Kunde inte skapa övning'
+      return
+    }
 
     name.value = ''
     youtube_url.value = ''
@@ -96,8 +111,11 @@ async function createExercise() {
 
     emit('exerciseCreated')
 
-  } catch (error) {
-    console.error('Något gick fel', error)
+  } catch (err) {
+    console.error('Något gick fel', err)
+    error.value = 'Ett nätverksfel uppstod'
+  } finally {
+    isLoading.value = false
   }
 }
 </script>

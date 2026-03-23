@@ -6,7 +6,7 @@
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
                 <Input v-model="email" type="email" placeholder="E-post" />
-                <Input v-model="password" type="password" placeholder="Lösenord" />
+                <Input v-model="password" type="password" placeholder="Lösenord" @keydown.enter="login" />
                 <Button @click="login">Logga in</Button>
                 <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
             </CardContent>

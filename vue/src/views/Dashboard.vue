@@ -30,6 +30,12 @@
         </Button>
       </div>
 
+      <!-- Error Message -->
+      <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl flex items-center justify-between">
+        <span>{{ error }}</span>
+        <Button variant="ghost" size="sm" @click="error = ''" class="text-red-600 hover:bg-red-100">Stäng</Button>
+      </div>
+
       <!-- Default Mode Header -->
       <div v-else class="mb-10">
         <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
@@ -133,10 +139,14 @@ import { onMounted, ref } from 'vue'
 const exercises = ref([])
 const schemas = ref([])
 const selectedSchema = ref(null)
+const error = ref('')
 
 onMounted(async () => {
-  getSchemas()
-  getExercises()
+  error.value = ''
+  await Promise.all([
+    getSchemas(),
+    getExercises()
+  ])
 })
 
 async function getSchemas() {
@@ -146,9 +156,12 @@ async function getSchemas() {
 
     if (response.ok) {
       schemas.value = data.schemas
+    } else {
+      error.value = 'Kunde inte hämta scheman'
     }
-  } catch (error) {
-    console.error('Failed to get schemas:', error)
+  } catch (err) {
+    console.error('Failed to get schemas:', err)
+    error.value = 'Nätverksfel vid hämtning av scheman'
   }
 }
 
@@ -159,9 +172,12 @@ async function getExercises() {
 
     if (response.ok) {
       exercises.value = data.exercises
+    } else {
+      error.value = 'Kunde inte hämta övningar'
     }
-  } catch (error) {
-    console.error('Failed to get exercises:', error)
+  } catch (err) {
+    console.error('Failed to get exercises:', err)
+    error.value = 'Nätverksfel vid hämtning av övningar'
   }
 }
 
