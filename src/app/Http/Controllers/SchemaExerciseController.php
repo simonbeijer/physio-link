@@ -10,7 +10,11 @@ class SchemaExerciseController extends Controller
 {
     public function index($schema_id)
     {
+        $schema = auth()->user()->schemas()->find($schema_id);
 
+        if (!$schema) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
 
         $exercises = SchemaExercise::where('schema_id', $schema_id)
             ->orderBy('order')
@@ -29,7 +33,8 @@ class SchemaExerciseController extends Controller
                 "order" => $item['order'],
                 "comfort_level" => $item['comfort_level'] ?? null
             ]);
-        };
+        }
+        ;
 
         return response()->json(['message' => 'övning sparad'], 201);
     }
