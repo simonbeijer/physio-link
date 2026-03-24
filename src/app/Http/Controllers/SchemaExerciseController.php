@@ -1,14 +1,15 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SchemaExercise;
 use App\Http\Requests\StoreSchemaExerciseRequest;
+use Illuminate\Http\JsonResponse;
+use App\Models\Schema;
 
 class SchemaExerciseController extends Controller
 {
-    public function index($schema_id)
+    public function index(int $schema_id): JsonResponse
     {
         $schema = $this->verifyOwnership($schema_id);
 
@@ -23,7 +24,7 @@ class SchemaExerciseController extends Controller
         return response()->json(["exercises" => $exercises]);
 
     }
-    public function store(StoreSchemaExerciseRequest $request, $schema_id)
+    public function store(StoreSchemaExerciseRequest $request,int $schema_id): JsonResponse
     {
         $schema = $this->verifyOwnership($schema_id);
 
@@ -46,7 +47,7 @@ class SchemaExerciseController extends Controller
         return response()->json(['message' => 'övning sparad'], 201);
     }
 
-    private function verifyOwnership($schema_id)
+    private function verifyOwnership(int $schema_id): bool | Schema
     {
 
         $schema = auth()->user()->schemas()->find($schema_id);

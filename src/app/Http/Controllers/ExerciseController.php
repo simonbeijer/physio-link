@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExerciseRequest;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\Exercise;
 
 class ExerciseController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $exercises = Exercise::all();
         return response()->json(["exercises" => $exercises]);
     }
 
-    public function store(StoreExerciseRequest $request)
+    public function store(StoreExerciseRequest $request): JsonResponse
     {
 
         $exercise = Exercise::create([
