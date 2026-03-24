@@ -13,4 +13,12 @@ class SchemaExercise extends Model
         'comfort_level'
     ];
 
+    public function exercise()
+    {
+        return $this->belongsTo(Exercise::class);
+    }
+    public function schema()
+    {
+        return $this->belongsTo(Schema::class);
+    }
 }

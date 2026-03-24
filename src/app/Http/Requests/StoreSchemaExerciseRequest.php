@@ -24,7 +24,7 @@ class StoreSchemaExerciseRequest extends FormRequest
     {
         return [
             'exercises' => ['required', 'array'],
-            'exercises.*.exercise_id' => ['required', 'integer'],
+            'exercises.*.exercise_id' => ['required', 'integer', 'exists:exercises,id'],
             'exercises.*.order' => ['required', 'integer'],
             'exercises.*.comfort_level' => ['nullable', 'integer'],
         ];
