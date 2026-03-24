@@ -6,13 +6,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreExerciseRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Exercise;
+use App\Http\Resources\ExerciseResource;
 
 class ExerciseController extends Controller
 {
     public function index(): JsonResponse
     {
         $exercises = Exercise::all();
-        return response()->json(["exercises" => $exercises]);
+        return response()->json(["exercises" => ExerciseResource::collection($exercises)]);
     }
 
     public function store(StoreExerciseRequest $request): JsonResponse
@@ -25,7 +26,7 @@ class ExerciseController extends Controller
             'end_time' => $request->end_time,
             'timer_duration' => $request->timer_duration
         ]);
-        return response()->json($exercise, 201);
+        return response()->json(new  ExerciseResource($exercise), 201);
 
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 use App\Http\Requests\StoreSchemaRequest;
+use App\Http\Resources\SchemaResource;
 use Illuminate\Http\JsonResponse;
 
 class SchemaController extends Controller
@@ -10,7 +11,7 @@ class SchemaController extends Controller
     public function index(): JsonResponse
     {
         $schemas = auth()->user()->schemas;
-        return response()->json(["schemas" => $schemas]);
+        return response()->json(["schemas" => SchemaResource::collection($schemas)]);
     }
 
     public function store(StoreSchemaRequest $request): JsonResponse {
@@ -18,6 +19,6 @@ class SchemaController extends Controller
             "name" => $request->name,
             'share_token' => \Str::uuid()
         ]);
-        return response()->json($schema, 201);
+        return response()->json(new SchemaResource($schema), 201);
     }
 }

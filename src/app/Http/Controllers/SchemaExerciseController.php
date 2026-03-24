@@ -6,6 +6,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSchemaExerciseRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Schema;
+use App\Http\Resources\SchemaExerciseResource;
+
 
 class SchemaExerciseController extends Controller
 {
@@ -21,7 +23,7 @@ class SchemaExerciseController extends Controller
             ->orderBy('order')
             ->get();
 
-        return response()->json(["exercises" => $exercises]);
+        return response()->json(["exercises" => SchemaExerciseResource::collection($exercises)]);
 
     }
     public function store(StoreSchemaExerciseRequest $request,int $schema_id): JsonResponse
