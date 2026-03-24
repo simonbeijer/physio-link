@@ -3,6 +3,7 @@
     <div v-for="schema in schemas" :key="schema.id"
       class="p-3 bg-white rounded-lg border text-sm font-medium flex items-center justify-between">
       <span>{{ schema.name }}</span>
+      <a :href="`/share/${schema.share_token}`">Link</a>
       <Button variant="outline" size="sm" @click="$emit('edit', schema)">
         Edit Exercises
       </Button>
