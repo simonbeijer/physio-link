@@ -8,10 +8,11 @@
     <p v-if="exercises.length === 0" class="text-sm text-gray-400">Inga övningar än.</p>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
+import { type Exercise } from '@/types';
 
-const props = defineProps({
-    exercises: Array
-})
+const props = defineProps<{
+    exercises: Exercise[]
+}>()
 
 </script>

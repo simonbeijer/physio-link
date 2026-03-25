@@ -11,12 +11,13 @@
     <p v-if="schemas.length === 0" class="text-sm text-gray-400">Inga scheman än.</p>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button'
+import { type Schema } from '@/types';
 
-const props = defineProps({
-    schemas: Array
-})
+const props = defineProps<{
+    schemas: Schema[]
+}>()
 
 defineEmits(['edit'])
 </script>

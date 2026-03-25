@@ -2,7 +2,7 @@
     <h1>test</h1>
 </template>
 <script setup>
-import { apiFetch } from '@/lib/api.js'
+import { apiFetch } from '@/lib/api'
 import { onMounted, ref } from 'vue'
 
 const exercises = ref([])

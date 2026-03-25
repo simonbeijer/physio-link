@@ -118,7 +118,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { 
   LogOut, 
   LayoutDashboard, 
@@ -133,12 +133,13 @@ import CreateSchemaForm from '@/components/CreateSchemaForm.vue';
 import ExercisesList from '@/components/ExercisesList.vue';
 import SchemasList from '@/components/SchemasList.vue';
 import SchemaExerciseSelector from '@/components/SchemaExerciseSelector.vue';
-import { apiFetch, logout } from '@/lib/api.js'
-import { onMounted, ref } from 'vue'
+import { apiFetch, logout } from '@/lib/api';
+import { onMounted, ref } from 'vue';
+import { type Exercise, type Schema } from '@/types';
 
-const exercises = ref([])
-const schemas = ref([])
-const selectedSchema = ref(null)
+const exercises = ref<Exercise[]>([])
+const schemas = ref<Schema[]>([])
+const selectedSchema = ref<Schema | null>(null)
 const error = ref('')
 
 onMounted(async () => {

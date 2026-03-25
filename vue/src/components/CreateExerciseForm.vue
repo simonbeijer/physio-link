@@ -65,7 +65,7 @@
 <script setup>
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { apiFetch } from '@/lib/api.js'
+import { apiFetch } from '@/lib/api'
 import { ref } from 'vue'
 
 const name = ref('')
