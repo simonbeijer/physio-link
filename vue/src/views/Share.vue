@@ -1,32 +1,27 @@
-<template>
-    <h1>test</h1>
-</template>
-<script setup>
+<script setup lang="ts">
 import { apiFetch } from '@/lib/api'
 import { onMounted, ref } from 'vue'
-
-const exercises = ref([])
-const error = ref('')
-
 import { useRoute } from 'vue-router'
+import { type SchemaExercise } from '@/types'
+
 const route = useRoute()
 const share_token = route.params.share_token
 
+const exercises = ref<SchemaExercise[]>([])
+const error = ref('')
 
 onMounted(async () => {
   error.value = ''
-  await Promise.all([
-    getExercises()
-  ])
+  await getExercises()
 })
 
 async function getExercises() {
   try {
     const response = await apiFetch(`/api/share/${share_token}`)
-    const data = await response.json()
-
+    
     if (response.ok) {
-      exercises.value = data.exercises
+        const data = await response.json()
+        exercises.value = data.exercises
     } else {
       error.value = 'Kunde inte hämta scheman'
     }
@@ -36,3 +31,15 @@ async function getExercises() {
   }
 }
 </script>
+
+<template>
+    <div v-if="error" class="text-red-500">{{ error }}</div>
+    <div v-else>
+        <h1>Workout Preview</h1>
+        <ul>
+            <li v-for="ex in exercises" :key="ex.exercise_id">
+                {{ ex.exercise.name }}
+            </li>
+        </ul>
+    </div>
+</template>

@@ -62,7 +62,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiFetch } from '@/lib/api'
@@ -77,7 +77,9 @@ const timer_duration = ref(0)
 const isLoading = ref(false)
 const error = ref('')
 
-const emit = defineEmits(['exerciseCreated'])
+const emit = defineEmits<{
+  (e: 'exerciseCreated'): void
+}>()
 
 async function createExercise() {
   if (!name.value || isLoading.value) return

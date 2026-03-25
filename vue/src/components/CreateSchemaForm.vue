@@ -24,7 +24,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiFetch } from '@/lib/api'
@@ -33,7 +33,9 @@ import { ref } from 'vue'
 const name = ref('')
 const isLoading = ref(false)
 const error = ref('')
-const emit = defineEmits(['schemaCreated'])
+const emit = defineEmits<{
+  (e: 'schemaCreated'): void
+}>()
 
 async function createSchema() {
   if (!name.value || isLoading.value) return

@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import Login from '@/views/Login.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Share from '@/views/Share.vue'
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   { path: '/login', component: Login },
   { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/share/:share_token', component: Share },
