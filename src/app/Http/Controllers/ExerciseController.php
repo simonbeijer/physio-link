@@ -26,7 +26,17 @@ class ExerciseController extends Controller
             'end_time' => $request->end_time,
             'timer_duration' => $request->timer_duration
         ]);
-        return response()->json(new  ExerciseResource($exercise), 201);
+        return response()->json(new ExerciseResource($exercise), 201);
+
+    }
+
+    public function destroy(int $id)
+    {
+
+        $exercise = Exercise::find($id);
+        $exercise->delete();
+
+        return response()->json(["message" => "deleted"], 200);
 
     }
 }

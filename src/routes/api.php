@@ -15,9 +15,13 @@ Route::middleware(['auth:sanctum'])->get('/schemas', [SchemaController::class, '
 
 Route::middleware(['auth:sanctum'])->post('/schemas', [SchemaController::class, 'store']);
 
+Route::middleware(['auth:sanctum'])->delete('/schemas/{schema_id}', [SchemaController::class, 'destroy']);
+
 Route::middleware(['auth:sanctum'])->get('/exercises', [ExerciseController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->post('/exercises', [ExerciseController::class, 'store']);
+
+Route::middleware(['auth:sanctum'])->delete('/exercises/{exercise_id}', [ExerciseController::class, 'destroy']);
 
 Route::middleware(['auth:sanctum'])->get('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'index']);
 
