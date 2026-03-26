@@ -20,6 +20,7 @@ class SchemaExerciseController extends Controller
         }
 
         $exercises = $schema->exercises()
+            ->with('exercise')
             ->orderBy('order')
             ->get();
 

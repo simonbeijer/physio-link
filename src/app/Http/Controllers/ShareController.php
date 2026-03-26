@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Schema;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\SchemaExerciseResource;
+use App\Http\Resources\SchemaResource;
 
 class ShareController extends Controller
 {
@@ -18,11 +19,10 @@ class ShareController extends Controller
 
         $exercises = $schema->exercises()->with('exercise')->orderBy('order')->get();
 
-        if (!$exercises) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        return response()->json(['exercises' => SchemaExerciseResource::collection($exercises)]);
+        return response()->json([
+            'schema' => new SchemaResource($schema),
+            'exercises' => SchemaExerciseResource::collection($exercises)
+        ]);
 
     }
 }
