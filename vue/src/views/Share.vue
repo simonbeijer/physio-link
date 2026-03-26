@@ -21,16 +21,32 @@
       <!-- Video Player -->
       <VideoPlayer :exercise="currentExercise" />
 
-      <!-- Controls -->
-      <div class="flex items-center justify-between mt-8 p-4 bg-white rounded-xl shadow-sm border">
-        <div class="text-slate-600">
-            <!-- Timer placeholder -->
-            <span class="font-mono text-xl font-bold">⏱ {{ currentExercise.timer_duration }}s</span>
+      <!-- Controls & Timer -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+        <div class="flex flex-col items-center">
+          <WorkoutTimer 
+            :duration="currentExercise.timer_duration" 
+            @finished="timerFinished = true" 
+          />
         </div>
 
-        <Button @click="nextExercise" size="lg" class="px-8">
-          {{ isLastExercise ? 'Avsluta' : 'Nästa övning' }}
-        </Button>
+        <div class="flex flex-col justify-center items-center md:items-start gap-6 p-8 bg-white rounded-2xl shadow-sm border">
+          <div class="space-y-2">
+            <h3 class="text-xl font-bold text-slate-900">Redo för nästa?</h3>
+            <p class="text-slate-500">Klicka när du är klar med övningen.</p>
+          </div>
+          
+          <Button 
+            @click="nextExercise" 
+            size="lg" 
+            class="w-full h-16 text-xl rounded-2xl shadow-lg active:scale-95 transition-all"
+            :variant="timerFinished ? 'default' : 'outline'"
+            :class="timerFinished ? 'bg-green-600 hover:bg-green-700' : ''"
+          >
+            {{ isLastExercise ? 'Slutför passet' : 'Nästa övning' }}
+            <ArrowRight class="ml-2 w-6 h-6" />
+          </Button>
+        </div>
       </div>
     </div>
     
@@ -42,11 +58,13 @@
 
 <script setup lang="ts">
 import { apiFetch } from '@/lib/api'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { type SchemaExercise } from '@/types'
 import Button from '@/components/ui/button/Button.vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
+import WorkoutTimer from '@/components/WorkoutTimer.vue'
+import { ArrowRight } from 'lucide-vue-next'
 
 const route = useRoute()
 const share_token = route.params.share_token
@@ -55,6 +73,7 @@ const exercises = ref<SchemaExercise[]>([])
 const error = ref('')
 const currentIndex = ref(0)
 const isCompleted = ref(false)
+const timerFinished = ref(false)
 
 const currentExercise = computed(() => {
   return exercises.value[currentIndex.value]?.exercise
@@ -62,6 +81,11 @@ const currentExercise = computed(() => {
 
 const isLastExercise = computed(() => {
   return currentIndex.value === exercises.value.length - 1
+})
+
+// Reset state when changing exercise
+watch(currentIndex, () => {
+  timerFinished.value = false
 })
 
 onMounted(async () => {
