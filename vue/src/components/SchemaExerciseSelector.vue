@@ -43,17 +43,22 @@
         <CardContent class="flex flex-col h-full space-y-4">
           <div class="space-y-2 flex-grow max-h-[500px] overflow-y-auto pr-2">
             <div v-for="(exercise, index) in schemaExercises" :key="index"
-              class="flex items-center justify-between p-3 border rounded-lg bg-card">
+              class="group flex items-center justify-between p-3 border rounded-xl bg-white hover:border-blue-200 hover:shadow-sm transition-all duration-200">
               <div class="flex items-center gap-3">
                 <span
-                  class="flex items-center justify-center w-6 h-6 rounded-full bg-secondary text-secondary-foreground text-xs font-bold">
+                  class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold">
                   {{ index + 1 }}
                 </span>
-                <span class="font-medium">{{ exercise.name }}</span>
+                <span class="font-bold text-slate-700">{{ exercise.name }}</span>
               </div>
-              <Button variant="destructive" size="sm" @click="removeExercise(index)"
-                class="bg-red-100 text-red-600 hover:bg-red-200 border-none">
-                remove
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                @click="removeExercise(index)"
+                class="h-8 w-8 text-slate-300 hover:text-red-600 hover:bg-red-50 transition-colors"
+                title="Remove from schema"
+              >
+                <Trash2 class="w-4 h-4" />
               </Button>
             </div>
 
@@ -81,6 +86,7 @@ import { apiFetch } from '@/lib/api'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Trash2 } from 'lucide-vue-next'
 import { type Exercise, type SchemaExercise } from '@/types';
 
 
@@ -119,7 +125,10 @@ const fetchSchemaExercises = async () => {
     if (response.ok) {
       const data = await response.json()
 
-      schemaExercises.value = data.exercises.map((se: SchemaExercise) => se.exercise)
+      // Ensure we only add defined exercises
+      schemaExercises.value = data.exercises
+        .map((se: SchemaExercise) => se.exercise)
+        .filter((ex: Exercise | undefined) => !!ex)
     } else {
       error.value = 'Kunde inte hämta schemats övningar.'
     }
@@ -143,6 +152,7 @@ const filteredExercises = computed(() => {
 })
 
 const addExercise = (exercise: Exercise) => {
+  if (!exercise) return
   schemaExercises.value.push({ ...exercise })
   success.value = ''
 }

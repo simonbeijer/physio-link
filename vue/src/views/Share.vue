@@ -14,8 +14,9 @@
     <div v-else-if="currentExercise" class="w-full max-w-3xl space-y-6">
       <!-- Header -->
       <div class="text-center space-y-2 mb-8">
-        <h1 class="text-3xl font-bold text-slate-900">{{ currentExercise.name }}</h1>
-        <p class="text-slate-500">Övning {{ currentIndex + 1 }} av {{ exercises.length }}</p>
+        <h1 v-if="schema" class="text-sm font-bold text-blue-600 uppercase tracking-widest">{{ schema.name }}</h1>
+        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ currentExercise.name }}</h2>
+        <p class="text-slate-500 font-medium">Övning {{ currentIndex + 1 }} av {{ exercises.length }}</p>
       </div>
 
       <!-- Video Player -->
@@ -60,7 +61,7 @@
 import { apiFetch } from '@/lib/api'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { type SchemaExercise } from '@/types'
+import { type Schema, type SchemaExercise } from '@/types'
 import Button from '@/components/ui/button/Button.vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
 import WorkoutTimer from '@/components/WorkoutTimer.vue'
@@ -69,6 +70,7 @@ import { ArrowRight } from 'lucide-vue-next'
 const route = useRoute()
 const share_token = route.params.share_token
 
+const schema = ref<Schema | null>(null)
 const exercises = ref<SchemaExercise[]>([])
 const error = ref('')
 const currentIndex = ref(0)
@@ -99,6 +101,7 @@ async function getExercises() {
     
     if (response.ok) {
         const data = await response.json()
+        schema.value = data.schema
         exercises.value = data.exercises
     } else {
       error.value = 'Kunde inte hämta scheman'

@@ -50,9 +50,9 @@
         </div>
       </div>
 
-      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Schemas Column -->
-        <div class="lg:col-span-5 space-y-6">
+        <div class="space-y-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="p-2 bg-blue-100 text-blue-700 rounded-lg">
@@ -84,7 +84,7 @@
         </div>
 
         <!-- Exercises Column -->
-        <div class="lg:col-span-7 space-y-6">
+        <div class="space-y-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <div class="p-2 bg-green-100 text-green-700 rounded-lg">
