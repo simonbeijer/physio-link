@@ -7,6 +7,9 @@
       <Button variant="outline" size="sm" @click="$emit('edit', schema)">
         Edit Exercises
       </Button>
+      <Button variant="destructive" size="icon-sm" @click="$emit('delete', schema.id)">
+        X
+      </Button>
     </div>
     <p v-if="schemas.length === 0" class="text-sm text-gray-400">Inga scheman än.</p>
   </div>
@@ -16,8 +19,8 @@ import { Button } from '@/components/ui/button'
 import { type Schema } from '@/types';
 
 const props = defineProps<{
-    schemas: Schema[]
+  schemas: Schema[]
 }>()
 
-defineEmits(['edit'])
+defineEmits(['edit', 'delete'])
 </script>
