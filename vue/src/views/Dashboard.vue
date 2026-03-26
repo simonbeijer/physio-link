@@ -7,7 +7,7 @@
           <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">P</div>
           <span class="font-bold text-xl tracking-tight text-slate-900">PhysioLink</span>
         </div>
-        
+
         <div class="flex items-center gap-4">
           <Button variant="ghost" size="sm" class="text-slate-500 hover:text-slate-900" @click="handleLogout">
             <LogOut class="w-4 h-4 mr-2" />
@@ -31,7 +31,8 @@
       </div>
 
       <!-- Error Message -->
-      <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl flex items-center justify-between">
+      <div v-if="error"
+        class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl flex items-center justify-between">
         <span>{{ error }}</span>
         <Button variant="ghost" size="sm" @click="error = ''" class="text-red-600 hover:bg-red-100">Stäng</Button>
       </div>
@@ -45,7 +46,7 @@
       <!-- Content -->
       <div v-if="selectedSchema" class="transition-all duration-300">
         <div class="bg-white rounded-2xl border shadow-sm p-2 overflow-hidden">
-           <SchemaExerciseSelector :schemaId="selectedSchema.id" />
+          <SchemaExerciseSelector :schemaId="selectedSchema.id" />
         </div>
       </div>
 
@@ -62,8 +63,8 @@
           </div>
 
           <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
-            <SchemasList :schemas="schemas" @edit="selectedSchema = $event" />
-            
+            <SchemasList :schemas="schemas" @edit="selectedSchema = $event" @delete="deleteSchema" />
+
             <Accordion type="single" collapsible class="mt-6 border-t pt-2">
               <AccordionItem value="create-schema" class="border-none">
                 <AccordionTrigger class="py-4 text-blue-600 hover:no-underline font-medium hover:text-blue-700">
@@ -94,8 +95,8 @@
           </div>
 
           <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
-            <ExercisesList :exercises="exercises" />
-            
+            <ExercisesList :exercises="exercises" @delete="deleteExercies" />
+
             <Accordion type="single" collapsible class="mt-6 border-t pt-2">
               <AccordionItem value="create-exercise" class="border-none">
                 <AccordionTrigger class="py-4 text-green-600 hover:no-underline font-medium hover:text-green-700">
@@ -119,12 +120,12 @@
 </template>
 
 <script setup lang="ts">
-import { 
-  LogOut, 
-  LayoutDashboard, 
-  Dumbbell, 
-  Plus, 
-  ChevronLeft 
+import {
+  LogOut,
+  LayoutDashboard,
+  Dumbbell,
+  Plus,
+  ChevronLeft
 } from 'lucide-vue-next'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
@@ -179,6 +180,38 @@ async function getExercises() {
   } catch (err) {
     console.error('Failed to get exercises:', err)
     error.value = 'Nätverksfel vid hämtning av övningar'
+  }
+}
+
+async function deleteSchema(id: number) {
+  try {
+    const response = await apiFetch(`/api/schemas/${id}`, {
+      method: "DELETE"
+    })
+    getSchemas();
+    if (!response.ok) {
+      error.value = 'Kunde inte ta bort schema'
+    }
+
+  } catch (err) {
+    console.error('Failed to delete schema:', err)
+    error.value = 'Kunde inte ta bort schema'
+  }
+}
+
+async function deleteExercies(id: number) {
+  try {
+    const response = await apiFetch(`/api/exercises/${id}`, {
+      method: "DELETE"
+    })
+    getExercises()
+    if (!response.ok) {
+      error.value = 'Kunde inte ta bort övning'
+    }
+
+  } catch (err) {
+    console.error('Could not remove exercies', err)
+    error.value = 'Kunde inte ta bort övning'
   }
 }
 
