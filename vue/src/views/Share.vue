@@ -11,41 +11,37 @@
       <Button @click="restart" size="lg">Kör igen</Button>
     </div>
 
-    <div v-else-if="currentExercise" class="w-full max-w-3xl space-y-6">
+    <div v-else-if="currentExercise" class="w-full max-w-3xl space-y-4">
       <!-- Header -->
-      <div class="text-center space-y-2 mb-8">
-        <h1 v-if="schema" class="text-sm font-bold text-blue-600 uppercase tracking-widest">{{ schema.name }}</h1>
-        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ currentExercise.name }}</h2>
-        <p class="text-slate-500 font-medium">Övning {{ currentIndex + 1 }} av {{ exercises.length }}</p>
+      <div class="text-center space-y-1 mb-2">
+        <h1 v-if="schema" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] opacity-70">{{ schema.name }}</h1>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">{{ currentExercise.name }}</h2>
+        <p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Steg {{ currentIndex + 1 }} av {{ exercises.length }}</p>
       </div>
 
       <!-- Video Player -->
       <VideoPlayer :exercise="currentExercise" />
 
       <!-- Controls & Timer -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-        <div class="flex flex-col items-center">
+      <div class="flex flex-col gap-6 w-full max-w-sm mx-auto">
+        <div class="flex justify-center">
           <WorkoutTimer 
+            :key="currentIndex"
             :duration="currentExercise.timer_duration" 
             @finished="timerFinished = true" 
           />
         </div>
 
-        <div class="flex flex-col justify-center items-center md:items-start gap-6 p-8 bg-white rounded-2xl shadow-sm border">
-          <div class="space-y-2">
-            <h3 class="text-xl font-bold text-slate-900">Redo för nästa?</h3>
-            <p class="text-slate-500">Klicka när du är klar med övningen.</p>
-          </div>
+        <div class="flex flex-col justify-between p-6 bg-white rounded-2xl shadow-sm border min-h-[160px]">
+
           
           <Button 
             @click="nextExercise" 
             size="lg" 
-            class="w-full h-16 text-xl rounded-2xl shadow-lg active:scale-95 transition-all"
-            :variant="timerFinished ? 'default' : 'outline'"
-            :class="timerFinished ? 'bg-green-600 hover:bg-green-700' : ''"
+            class="w-full h-14 text-lg rounded-xl shadow-md active:scale-95 transition-all bg-blue-600 hover:bg-blue-700 text-white font-bold"
           >
             {{ isLastExercise ? 'Slutför passet' : 'Nästa övning' }}
-            <ArrowRight class="ml-2 w-6 h-6" />
+            <ArrowRight class="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>

@@ -1,15 +1,17 @@
 <template>
   <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
     <div ref="playerElement" class="w-full h-full"></div>
-    
+
     <!-- Loading Overlay -->
-    <div v-if="isLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white gap-4">
+    <div v-if="isLoading"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white gap-4">
       <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       <p class="font-medium animate-pulse text-blue-200">Preparing Exercise...</p>
     </div>
 
     <!-- Error Overlay -->
-    <div v-if="error" class="absolute inset-0 flex flex-col items-center justify-center bg-red-900/90 text-white p-6 text-center">
+    <div v-if="error"
+      class="absolute inset-0 flex flex-col items-center justify-center bg-red-900/90 text-white p-6 text-center">
       <span class="text-4xl mb-2">⚠️</span>
       <p class="font-bold text-xl">{{ error }}</p>
       <p class="text-sm text-red-200 mt-2">The video could not be loaded. Please check the YouTube link.</p>
@@ -49,10 +51,10 @@ const loadYouTubeAPI = (): Promise<void> => {
     firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
 
     const previousOnReady = (window as any).onYouTubeIframeAPIReady
-    ;(window as any).onYouTubeIframeAPIReady = () => {
-      if (previousOnReady) previousOnReady()
-      resolve()
-    }
+      ; (window as any).onYouTubeIframeAPIReady = () => {
+        if (previousOnReady) previousOnReady()
+        resolve()
+      }
   })
 
   return apiPromise
@@ -71,7 +73,7 @@ const initPlayer = async () => {
 
   try {
     await loadYouTubeAPI()
-    
+
     const videoId = getVideoId(props.exercise.youtube_url)
     if (!videoId) {
       error.value = 'Invalid Video URL'
@@ -83,7 +85,7 @@ const initPlayer = async () => {
 
     // Ensure previous player is destroyed before re-creating if needed
     if (player.value && player.value.destroy) {
-        player.value.destroy()
+      player.value.destroy()
     }
 
     player.value = new (window as any).YT.Player(playerElement.value, {
@@ -97,6 +99,8 @@ const initPlayer = async () => {
         rel: 0,
         iv_load_policy: 3,
         start: props.exercise.start_time,
+        mute: 1,
+        playsinline: 1,
       },
       events: {
         onReady: onPlayerReady,
@@ -133,8 +137,8 @@ const onPlayerStateChange = (event: any) => {
   } else if (event.data === 0) {
     // Video ended naturally, jump back
     if (props.exercise) {
-        event.target.seekTo(props.exercise.start_time)
-        event.target.playVideo()
+      event.target.seekTo(props.exercise.start_time)
+      event.target.playVideo()
     }
   } else if (event.data === 3) { // BUFFERING
     isLoading.value = true
@@ -143,7 +147,7 @@ const onPlayerStateChange = (event: any) => {
 
 const startLoop = () => {
   stopLoop()
-  
+
   if (!props.exercise || props.exercise.end_time <= 0) return
 
   // Tighter interval for precision (100ms)
@@ -170,7 +174,7 @@ const stopLoop = () => {
 // Watch for exercise changes to switch video
 watch(() => props.exercise?.id, async (newId) => {
   if (!newId || !props.exercise) return
-  
+
   error.value = ''
   isLoading.value = true
   stopLoop()
