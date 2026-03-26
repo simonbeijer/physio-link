@@ -1,6 +1,10 @@
 <template>
-  <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+  <div
+    class="relative w-full aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
     <div ref="playerElement" class="w-full h-full"></div>
+
+    <!-- Transparent Click Overlay -->
+    <div class="absolute inset-0 z-10 bg-transparent"></div>
 
     <!-- Loading Overlay -->
     <div v-if="isLoading"

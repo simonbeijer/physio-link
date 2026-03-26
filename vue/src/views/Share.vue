@@ -1,54 +1,60 @@
-
 <template>
-  <div class="min-h-screen bg-slate-50 flex flex-col items-center p-4">
-    <div v-if="error" class="text-red-600 font-medium p-4 bg-red-50 rounded-lg border border-red-200">
-      {{ error }}
-    </div>
-
-    <div v-else-if="isCompleted" class="text-center space-y-6 mt-10">
-      <h1 class="text-4xl font-bold text-green-600">Bra jobbat! 🎉</h1>
-      <p class="text-xl text-slate-600">Du har genomfört hela passet.</p>
-      <Button @click="restart" size="lg">Kör igen</Button>
-    </div>
-
-    <div v-else-if="currentExercise" class="w-full max-w-3xl space-y-4">
-      <!-- Header -->
-      <div class="text-center space-y-1 mb-2">
-        <h1 v-if="schema" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em] opacity-70">{{ schema.name }}</h1>
-        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight leading-tight">{{ currentExercise.name }}</h2>
-        <p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Steg {{ currentIndex + 1 }} av {{ exercises.length }}</p>
+  <div class="h-screen w-full bg-slate-50 flex flex-col overflow-hidden">
+    <!-- Main Content Area (Now takes full space) -->
+    <div class="flex-grow flex flex-col items-center justify-center p-2 overflow-y-auto pb-48">
+      <div v-if="error" class="text-red-600 font-medium p-4 bg-red-50 rounded-lg border border-red-200 m-4">
+        {{ error }}
       </div>
 
-      <!-- Video Player -->
-      <VideoPlayer :exercise="currentExercise" />
+      <div v-else-if="isCompleted" class="text-center space-y-6 animate-in fade-in zoom-in duration-300">
+        <div class="text-6xl mb-4">🎉</div>
+        <h1 class="text-3xl font-black text-slate-900 leading-tight">Bra jobbat!</h1>
+        <p class="text-slate-500 font-medium">Du har genomfört hela passet.</p>
+        <Button @click="restart" size="lg" class="rounded-full px-8 bg-blue-600 font-bold text-white">Kör igen</Button>
+      </div>
 
-      <!-- Controls & Timer -->
-      <div class="flex flex-col gap-6 w-full max-w-sm mx-auto">
-        <div class="flex justify-center">
-          <WorkoutTimer 
-            :key="currentIndex"
-            :duration="currentExercise.timer_duration" 
-            @finished="timerFinished = true" 
-          />
+      <div v-else-if="currentExercise" class="w-full max-w-sm space-y-4 flex flex-col items-center">
+        <!-- Compact Video Player -->
+        <div class="w-full px-2">
+          <VideoPlayer :exercise="currentExercise" />
         </div>
 
-        <div class="flex flex-col justify-between p-6 bg-white rounded-2xl shadow-sm border min-h-[160px]">
-
-          
-          <Button 
-            @click="nextExercise" 
-            size="lg" 
-            class="w-full h-14 text-lg rounded-xl shadow-md active:scale-95 transition-all bg-blue-600 hover:bg-blue-700 text-white font-bold"
-          >
-            {{ isLastExercise ? 'Slutför passet' : 'Nästa övning' }}
-            <ArrowRight class="ml-2 w-5 h-5" />
-          </Button>
+        <!-- Compact Timer -->
+        <div class="transform scale-90 sm:scale-100">
+          <WorkoutTimer :key="currentIndex" :duration="currentExercise.timer_duration"
+            @finished="timerFinished = true" />
         </div>
       </div>
+
+      <div v-else class="flex flex-col items-center gap-3">
+        <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Laddar schema...</p>
+      </div>
     </div>
-    
-    <div v-else class="mt-10">
-        Laddar schema...
+
+    <!-- Bottom Fixed Action with Info -->
+    <div v-if="currentExercise && !isCompleted"
+      class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-slate-100 shadow-2xl z-50">
+      <div class="max-w-sm mx-auto space-y-4">
+        <!-- Info above button -->
+        <div class="flex items-center justify-between px-1">
+          <div class="flex flex-col">
+            <h1 v-if="schema" class="text-[8px] font-bold text-blue-600 uppercase tracking-widest leading-none mb-1">{{
+              schema.name }}</h1>
+            <h2 class="text-sm font-black text-slate-900 truncate max-w-[200px]">{{ currentExercise.name }}</h2>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-slate-400 font-black tabular-nums">{{ currentIndex + 1 }} / {{ exercises.length
+              }}</p>
+          </div>
+        </div>
+
+        <Button @click="nextExercise" size="lg"
+          class="w-full h-14 text-lg rounded-2xl shadow-lg active:scale-95 transition-all bg-blue-600 hover:bg-blue-700 text-white font-black">
+          {{ isLastExercise ? 'Slutför passet' : 'Nästa övning' }}
+          <ArrowRight class="ml-2 w-5 h-5 stroke-[3px]" />
+        </Button>
+      </div>
     </div>
   </div>
 </template>
@@ -94,11 +100,11 @@ onMounted(async () => {
 async function getExercises() {
   try {
     const response = await apiFetch(`/api/share/${share_token}`)
-    
+
     if (response.ok) {
-        const data = await response.json()
-        schema.value = data.schema
-        exercises.value = data.exercises
+      const data = await response.json()
+      schema.value = data.schema
+      exercises.value = data.exercises
     } else {
       error.value = 'Kunde inte hämta scheman'
     }
