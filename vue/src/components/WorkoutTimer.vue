@@ -85,21 +85,21 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-row items-center gap-6 p-6 bg-white rounded-2xl border shadow-sm w-full max-w-md">
     <!-- Controls -->
-    <div class="flex flex-col gap-10 items-center min-w-[120px]">
+    <div class="flex flex-col gap-4 sm:gap-10 items-center min-w-[100px] sm:min-w-[120px]">
       <Button :variant="isActive ? 'outline' : 'default'" size="lg"
-        class="h-12 w-32 rounded-full font-bold transition-all shadow-md active:scale-95"
+        class="h-10 sm:h-12 w-24 sm:w-32 rounded-full font-bold transition-all shadow-md active:scale-95 text-xs sm:text-base"
         :class="isActive ? 'bg-white border-orange-500 text-orange-600 hover:bg-orange-50' : 'bg-blue-600 hover:bg-blue-700'"
         @click="toggleTimer">
-        <component :is="isActive ? Pause : Play" class="w-5 h-5 mr-2 fill-current" />
+        <component :is="isActive ? Pause : Play" class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 fill-current" />
         {{ isActive ? 'Pause' : 'Start' }}
       </Button>
-      <Button variant="outline" size="icon" class="h-12 w-12 rounded-full border-2" @click="resetTimer">
-        <RotateCcw class="w-5 h-5" />
+      <Button variant="outline" size="icon" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full border-2" @click="resetTimer">
+        <RotateCcw class="w-4 h-4 sm:w-5 sm:h-5" />
       </Button>
 
     </div>
     <!-- Progress Ring -->
-    <div class="relative w-48 h-48 flex-shrink-0">
+    <div class="relative w-32 h-32 sm:w-48 sm:h-48 flex-shrink-0">
       <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
         <!-- Background Circle -->
         <circle class="text-slate-100 stroke-current" stroke-width="8" fill="transparent" r="45" cx="50" cy="50" />
@@ -113,7 +113,7 @@ onUnmounted(() => {
       </svg>
       <!-- Time Display -->
       <div class="absolute inset-0 flex items-center justify-center">
-        <span class="text-4xl font-mono font-black tabular-nums text-slate-900">
+        <span class="text-2xl sm:text-4xl font-mono font-black tabular-nums text-slate-900">
           {{ timeLeft }}s
         </span>
       </div>

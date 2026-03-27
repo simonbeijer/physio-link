@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen w-full bg-slate-50 flex flex-col overflow-hidden">
-    <!-- Main Content Area (Now takes full space) -->
-    <div class="flex-grow flex flex-col items-center justify-center p-2 overflow-y-auto pb-48">
+    <!-- Main Content Area -->
+    <div class="flex-grow flex flex-col items-center justify-center p-2 overflow-y-auto pb-40">
       <div v-if="error" class="text-red-600 font-medium p-4 bg-red-50 rounded-lg border border-red-200 m-4">
         {{ error }}
       </div>
@@ -13,14 +13,14 @@
         <Button @click="restart" size="lg" class="rounded-full px-8 bg-blue-600 font-bold text-white">Kör igen</Button>
       </div>
 
-      <div v-else-if="currentExercise" class="w-full max-w-sm space-y-4 flex flex-col items-center">
+      <div v-else-if="currentExercise" class="w-full max-w-sm space-y-2 flex flex-col items-center">
         <!-- Compact Video Player -->
         <div class="w-full px-2">
           <VideoPlayer :exercise="currentExercise" />
         </div>
 
         <!-- Compact Timer -->
-        <div class="transform scale-90 sm:scale-100">
+        <div class="flex justify-center w-full">
           <WorkoutTimer :key="currentIndex" :duration="currentExercise.timer_duration"
             @finished="timerFinished = true" />
         </div>
