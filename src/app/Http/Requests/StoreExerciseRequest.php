@@ -25,9 +25,9 @@ class StoreExerciseRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'youtube_url' => ['required', 'url'],
-            'start_time' => ['required', 'integer'],
-            'end_time' => ['required', 'integer'],
-            'timer_duration' => ['required', 'integer'],
+            'start_time' => ['required', 'numeric', 'min:0'],
+            'end_time' => ['required', 'numeric', 'min:0'],
+            'timer_duration' => ['required', 'integer', 'min:0'],
         ];
     }
 }

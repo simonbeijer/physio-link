@@ -124,6 +124,12 @@ const initPlayer = async () => {
 
 const onPlayerReady = (event: any) => {
   isLoading.value = false
+  
+  // Use seekTo for sub-second precision
+  if (props.exercise) {
+    event.target.seekTo(props.exercise.start_time, true)
+  }
+  
   event.target.playVideo()
   // Some browsers block autoplay unless muted
   if (event.target.getPlayerState() !== 1) { // 1 = Playing
@@ -139,9 +145,9 @@ const onPlayerStateChange = (event: any) => {
     isLoading.value = false
     startLoop()
   } else if (event.data === 0) {
-    // Video ended naturally, jump back
+    // Video ended naturally, jump back with sub-second precision
     if (props.exercise) {
-      event.target.seekTo(props.exercise.start_time)
+      event.target.seekTo(props.exercise.start_time, true)
       event.target.playVideo()
     }
   } else if (event.data === 3) { // BUFFERING

@@ -35,8 +35,8 @@ class Exercise extends Model
     protected function casts(): array
     {
         return [
-            'start_time' => 'integer',
-            'end_time' => 'integer',
+            'start_time' => 'float',
+            'end_time' => 'float',
             'timer_duration' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',

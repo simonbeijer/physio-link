@@ -30,6 +30,7 @@
           <Input 
             type="number" 
             v-model="start_time" 
+            step="0.1"
             class="bg-white border-green-200 focus-visible:ring-green-500"
           />
         </div>
@@ -38,6 +39,7 @@
           <Input 
             type="number" 
             v-model="end_time" 
+            step="0.1"
             class="bg-white border-green-200 focus-visible:ring-green-500"
           />
         </div>
