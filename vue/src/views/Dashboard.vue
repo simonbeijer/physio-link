@@ -107,7 +107,7 @@
                 </AccordionTrigger>
                 <AccordionContent>
                   <div class="pt-2">
-                    <CreateExerciseForm :exercise="selectedEditExercise" @exerciseCreated="getExercises" />
+                    <CreateExerciseForm :exercise="selectedEditExercise" @exerciseUpdate="getExercises" />
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -224,7 +224,7 @@ const editExercise = (async (exercise: Exercise) => {
     selectedEditExercise.value = exercise
   }
 
-  console.log("exercise",)
+  console.log("exercise", exercise)
 })
 
 function handleLogout() {
