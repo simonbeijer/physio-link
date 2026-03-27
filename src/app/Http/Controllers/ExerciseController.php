@@ -26,6 +26,7 @@ class ExerciseController extends Controller
             'end_time' => $request->end_time,
             'timer_duration' => $request->timer_duration
         ]);
+
         return response()->json(new ExerciseResource($exercise), 201);
 
     }
@@ -34,9 +35,29 @@ class ExerciseController extends Controller
     {
 
         $exercise = Exercise::find($id);
+        if (!$exercise) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
         $exercise->delete();
 
         return response()->json(["message" => "deleted"], 200);
 
+    }
+
+    public function update(StoreExerciseRequest $request, int $id)
+    {
+        $exercise = Exercise::find($id);
+        if (!$exercise) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+        $exercise->update([
+            'name' => $request->name,
+            'youtube_url' => $request->youtube_url,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'timer_duration' => $request->timer_duration
+        ]);
+
+        return response()->json(new ExerciseResource($exercise));
     }
 }

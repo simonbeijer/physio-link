@@ -11,6 +11,7 @@ class SchemaController extends Controller
     public function index(): JsonResponse
     {
         $schemas = auth()->user()->schemas;
+
         return response()->json(["schemas" => SchemaResource::collection($schemas)]);
     }
 
@@ -20,6 +21,7 @@ class SchemaController extends Controller
             "name" => $request->name,
             'share_token' => \Str::uuid()
         ]);
+
         return response()->json(new SchemaResource($schema), 201);
     }
 

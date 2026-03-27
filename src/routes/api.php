@@ -11,22 +11,18 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware(['auth:sanctum'])->get('/schemas', [SchemaController::class, 'index']);
+Route::middleware(['auth:sanctum'])->group(function () {
 
-Route::middleware(['auth:sanctum'])->post('/schemas', [SchemaController::class, 'store']);
+    Route::get('/schemas', [SchemaController::class, 'index']);
+    Route::post('/schemas', [SchemaController::class, 'store']);
+    Route::delete('/schemas/{schema_id}', [SchemaController::class, 'destroy']);
+    Route::get('/exercises', [ExerciseController::class, 'index']);
+    Route::post('/exercises', [ExerciseController::class, 'store']);
+    Route::patch('/exercises/{exercise_id}', [ExerciseController::class, 'update']);
+    Route::delete('/exercises/{exercise_id}', [ExerciseController::class, 'destroy']);
+    Route::get('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'index']);
+    Route::post('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'store']);
+    Route::get('/share/{share_token}', [ShareController::class, 'index']);
+});
 
-Route::middleware(['auth:sanctum'])->delete('/schemas/{schema_id}', [SchemaController::class, 'destroy']);
-
-Route::middleware(['auth:sanctum'])->get('/exercises', [ExerciseController::class, 'index']);
-
-Route::middleware(['auth:sanctum'])->post('/exercises', [ExerciseController::class, 'store']);
-
-Route::middleware(['auth:sanctum'])->delete('/exercises/{exercise_id}', [ExerciseController::class, 'destroy']);
-
-Route::middleware(['auth:sanctum'])->get('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'index']);
-
-Route::middleware(['auth:sanctum'])->post('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'store']);
-
-Route::get('/share/{share_token}', [ShareController::class, 'index']);
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
