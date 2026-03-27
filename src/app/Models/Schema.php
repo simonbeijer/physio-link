@@ -23,7 +23,6 @@ class Schema extends Model
     protected $fillable = [
         'name',
         'share_token',
-        'user_id',
     ];
 
     /**

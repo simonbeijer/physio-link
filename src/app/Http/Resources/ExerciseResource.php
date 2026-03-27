@@ -15,12 +15,12 @@ class ExerciseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id"=> $this->id,
-            "name" => $this->name,
-            "youtube_url" => $this->youtube_url,
-            "start_time" => $this->start_time,
-            "end_time" => $this->end_time,
-            "timer_duration" => $this->timer_duration
+            'id'=> $this->id,
+            'name' => $this->name,
+            'youtube_url' => $this->youtube_url,
+            'start_time' => $this->start_time,
+            'end_time' => $this->end_time,
+            'timer_duration' => $this->timer_duration
         ];
     }
 }
