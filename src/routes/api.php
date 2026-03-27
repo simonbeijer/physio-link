@@ -22,7 +22,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::delete('/exercises/{exercise_id}', [ExerciseController::class, 'destroy']);
     Route::get('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'index']);
     Route::post('/schemas/{schema_id}/exercises', [SchemaExerciseController::class, 'store']);
-    Route::get('/share/{share_token}', [ShareController::class, 'index']);
 });
+
+Route::middleware('throttle:30,1')
+    ->get('/share/{share_token}', [ShareController::class, 'index']);
 
 require __DIR__ . '/auth.php';
