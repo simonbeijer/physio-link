@@ -95,9 +95,9 @@
           </div>
 
           <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
-            <ExercisesList :exercises="exercises" @delete="deleteExercies" />
+            <ExercisesList :exercises="exercises" @delete="deleteExercise" @edit="editExercise" />
 
-            <Accordion type="single" collapsible class="mt-6 border-t pt-2">
+            <Accordion v-model="openAccordion" type="single" collapsible class="mt-6 border-t pt-2">
               <AccordionItem value="create-exercise" class="border-none">
                 <AccordionTrigger class="py-4 text-green-600 hover:no-underline font-medium hover:text-green-700">
                   <span class="flex items-center gap-2">
@@ -107,7 +107,7 @@
                 </AccordionTrigger>
                 <AccordionContent>
                   <div class="pt-2">
-                    <CreateExerciseForm @exerciseCreated="getExercises" />
+                    <CreateExerciseForm :exercise="selectedEditExercise" @exerciseCreated="getExercises" />
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -142,6 +142,8 @@ const exercises = ref<Exercise[]>([])
 const schemas = ref<Schema[]>([])
 const selectedSchema = ref<Schema | null>(null)
 const error = ref('')
+const openAccordion = ref('')
+const selectedEditExercise = ref<Exercise | null>(null)
 
 onMounted(async () => {
   error.value = ''
@@ -199,7 +201,7 @@ async function deleteSchema(id: number) {
   }
 }
 
-async function deleteExercies(id: number) {
+async function deleteExercise(id: number) {
   try {
     const response = await apiFetch(`/api/exercises/${id}`, {
       method: "DELETE"
@@ -210,10 +212,20 @@ async function deleteExercies(id: number) {
     }
 
   } catch (err) {
-    console.error('Could not remove exercies', err)
+    console.error('Could not remove exercise', err)
     error.value = 'Kunde inte ta bort övning'
   }
 }
+
+const editExercise = (async (exercise: Exercise) => {
+
+  if (exercise) {
+    openAccordion.value = 'create-exercise';
+    selectedEditExercise.value = exercise
+  }
+
+  console.log("exercise",)
+})
 
 function handleLogout() {
   logout()

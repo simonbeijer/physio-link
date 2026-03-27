@@ -19,6 +19,9 @@
           </div>
         </div>
       </div>
+      <Button variant="outline" size="sm" @click="$emit('edit', exercise)" class="h-9 px-3 text-slate-600 hover:text-green-600 hover:border-green-200">
+        Edit
+      </Button>
 
       <Button 
         variant="ghost" 
@@ -46,5 +49,5 @@ const props = defineProps<{
     exercises: Exercise[]
 }>()
 
-defineEmits(['delete'])
+defineEmits(['delete', 'edit'])
 </script>
