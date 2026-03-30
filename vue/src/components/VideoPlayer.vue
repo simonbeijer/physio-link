@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative w-full aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+    class="relative w-full aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
     <div ref="playerElement" class="w-full h-full"></div>
 
     <div class="absolute inset-0 z-10 bg-transparent"></div>
