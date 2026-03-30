@@ -1,1 +1,1 @@
-web: php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
+web: php artisan migrate --force && php artisan tinker --execute="User::firstOrCreate(['email' => env('ADMIN_EMAIL')], ['name' => env('ADMIN_NAME'), 'password' => bcrypt(env('ADMIN_PASSWORD'))]);" && php artisan serve --host=0.0.0.0 --port=$PORT
