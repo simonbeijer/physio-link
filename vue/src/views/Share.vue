@@ -1,6 +1,5 @@
 <template>
   <div class="h-screen w-full bg-slate-50 flex flex-col overflow-hidden">
-    <!-- Main Content Area -->
     <div class="flex-grow flex flex-col items-center justify-center p-2 overflow-y-auto pb-40">
       <div v-if="error" class="text-red-600 font-medium p-4 bg-red-50 rounded-lg border border-red-200 m-4">
         {{ error }}
@@ -14,12 +13,10 @@
       </div>
 
       <div v-else-if="currentExercise" class="w-full max-w-sm space-y-2 flex flex-col items-center">
-        <!-- Compact Video Player -->
         <div class="w-full px-2">
           <VideoPlayer :exercise="currentExercise" />
         </div>
 
-        <!-- Compact Timer -->
         <div class="flex justify-center w-full">
           <WorkoutTimer :key="currentIndex" :duration="currentExercise.timer_duration"
             @finished="timerFinished = true" />
@@ -32,11 +29,9 @@
       </div>
     </div>
 
-    <!-- Bottom Fixed Action with Info -->
     <div v-if="currentExercise && !isCompleted"
       class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-slate-100 shadow-2xl z-50">
       <div class="max-w-sm mx-auto space-y-4">
-        <!-- Info above button -->
         <div class="flex items-center justify-between px-1">
           <div class="flex flex-col">
             <h1 v-if="schema" class="text-[8px] font-bold text-blue-600 uppercase tracking-widest leading-none mb-1">{{
@@ -87,7 +82,6 @@ const isLastExercise = computed(() => {
   return currentIndex.value === exercises.value.length - 1
 })
 
-// Reset state when changing exercise
 watch(currentIndex, () => {
   timerFinished.value = false
 })

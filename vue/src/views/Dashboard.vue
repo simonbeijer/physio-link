@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-slate-50/50">
-    <!-- Top Navigation -->
     <header class="border-b bg-white/80 backdrop-blur-md sticky top-0 z-10">
       <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -18,7 +17,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-8">
-      <!-- Edit Mode Header -->
       <div v-if="selectedSchema" class="mb-8 flex items-center justify-between">
         <div>
           <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Edit Schema</h1>
@@ -30,20 +28,17 @@
         </Button>
       </div>
 
-      <!-- Error Message -->
       <div v-if="error"
         class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl flex items-center justify-between">
         <span>{{ error }}</span>
         <Button variant="ghost" size="sm" @click="error = ''" class="text-red-600 hover:bg-red-100">Stäng</Button>
       </div>
 
-      <!-- Default Mode Header -->
-      <div v-else class="mb-10">
+      <div v-else-if="!selectedSchema" class="mb-10">
         <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
-        <p class="text-slate-500 text-lg">Manage your exercise programs and share them with patients.</p>
+        <p class="text-slate-500 text-lg">Manage your exercise programs and share them with clients.</p>
       </div>
 
-      <!-- Content -->
       <div v-if="selectedSchema" class="transition-all duration-300">
         <div class="bg-white rounded-2xl border shadow-sm p-2 overflow-hidden">
           <SchemaExerciseSelector :schemaId="selectedSchema.id" />
@@ -51,7 +46,6 @@
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Schemas Column -->
         <div class="space-y-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -83,7 +77,6 @@
           </div>
         </div>
 
-        <!-- Exercises Column -->
         <div class="space-y-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -95,7 +88,7 @@
           </div>
 
           <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
-            <ExercisesList :exercises="exercises" @delete="deleteExercise" @edit="editExercise" />
+            <ExercisesList :exercises="exercises" @delete="deleteExercise" @edit="handleEditExercise" />
 
             <Accordion v-model="openAccordion" type="single" collapsible class="mt-6 border-t pt-2">
               <AccordionItem value="create-exercise" class="border-none">
@@ -129,14 +122,14 @@ import {
 } from 'lucide-vue-next'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
-import CreateExerciseForm from '@/components/CreateExerciseForm.vue';
-import CreateSchemaForm from '@/components/CreateSchemaForm.vue';
-import ExercisesList from '@/components/ExercisesList.vue';
-import SchemasList from '@/components/SchemasList.vue';
-import SchemaExerciseSelector from '@/components/SchemaExerciseSelector.vue';
-import { apiFetch, logout } from '@/lib/api';
-import { onMounted, ref } from 'vue';
-import { type Exercise, type Schema } from '@/types';
+import CreateExerciseForm from '@/components/CreateExerciseForm.vue'
+import CreateSchemaForm from '@/components/CreateSchemaForm.vue'
+import ExercisesList from '@/components/ExercisesList.vue'
+import SchemasList from '@/components/SchemasList.vue'
+import SchemaExerciseSelector from '@/components/SchemaExerciseSelector.vue'
+import { apiFetch, logout } from '@/lib/api'
+import { onMounted, ref } from 'vue'
+import { type Exercise, type Schema } from '@/types'
 
 const exercises = ref<Exercise[]>([])
 const schemas = ref<Schema[]>([])
@@ -190,11 +183,10 @@ async function deleteSchema(id: number) {
     const response = await apiFetch(`/api/schemas/${id}`, {
       method: "DELETE"
     })
-    getSchemas();
+    getSchemas()
     if (!response.ok) {
       error.value = 'Kunde inte ta bort schema'
     }
-
   } catch (err) {
     console.error('Failed to delete schema:', err)
     error.value = 'Kunde inte ta bort schema'
@@ -210,22 +202,18 @@ async function deleteExercise(id: number) {
     if (!response.ok) {
       error.value = 'Kunde inte ta bort övning'
     }
-
   } catch (err) {
     console.error('Could not remove exercise', err)
     error.value = 'Kunde inte ta bort övning'
   }
 }
 
-const editExercise = (async (exercise: Exercise) => {
-
+function handleEditExercise(exercise: Exercise) {
   if (exercise) {
-    openAccordion.value = 'create-exercise';
+    openAccordion.value = 'create-exercise'
     selectedEditExercise.value = exercise
   }
-
-  console.log("exercise", exercise)
-})
+}
 
 function handleLogout() {
   logout()

@@ -3,16 +3,14 @@
     <div class="p-5 bg-green-100/50 rounded-lg border border-green-200 space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label
-            class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Övningsnamn</label>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">Övningsnamn</label>
           <Input type="text" v-model="name" placeholder="Ex: Knäböj"
-            class="bg-white border-green-200 focus-visible:ring-green-500" @keydown.enter="createExercise" />
+            class="bg-white border-green-200 focus-visible:ring-green-500" @keydown.enter="handleAction" />
         </div>
         <div>
-          <label
-            class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">YouTube-länk</label>
+          <label class="block text-xs font-semibold text-green-900 uppercase tracking-wider mb-1 ml-1">YouTube-länk</label>
           <Input type="text" v-model="youtube_url" placeholder="https://youtube.com/..."
-            class="bg-white border-green-200 focus-visible:ring-green-500" @keydown.enter="createExercise" />
+            class="bg-white border-green-200 focus-visible:ring-green-500" @keydown.enter="handleAction" />
         </div>
       </div>
 
@@ -34,7 +32,6 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
         <Button v-if="updateId" @click="updateExercise" class="bg-blue-600 hover:bg-blue-700 text-white font-bold flex-grow h-12"
           :disabled="!isFormValid || isLoading">
@@ -58,22 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { apiFetch } from '@/lib/api'
-import { Exercise } from '@/types';
+import { type Exercise } from '@/types'
 import { ref, watch, computed } from 'vue'
 import { XCircle, Save, CheckCircle } from 'lucide-vue-next'
-
-const name = ref('')
-const youtube_url = ref('')
-const start_time = ref(0)
-const end_time = ref(0)
-const timer_duration = ref(0)
-const updateId = ref(0)
-
-const isLoading = ref(false)
-const error = ref('')
 
 const props = defineProps<{
   exercise: Exercise | null
@@ -84,7 +71,15 @@ const emit = defineEmits<{
   (e: 'clearSelection'): void
 }>()
 
-// Validation logic
+const name = ref('')
+const youtube_url = ref('')
+const start_time = ref(0)
+const end_time = ref(0)
+const timer_duration = ref(0)
+const updateId = ref(0)
+const isLoading = ref(false)
+const error = ref('')
+
 const isFormValid = computed(() => {
   return name.value.trim() !== '' && 
          youtube_url.value.trim() !== '' && 
@@ -93,16 +88,24 @@ const isFormValid = computed(() => {
 
 watch(() => props.exercise, (exercise: Exercise | null) => {
   if (exercise) {
-    name.value = exercise.name ?? '';
-    youtube_url.value = exercise.youtube_url ?? '';
+    name.value = exercise.name ?? ''
+    youtube_url.value = exercise.youtube_url ?? ''
     start_time.value = exercise.start_time ?? 0
-    end_time.value = exercise.end_time ?? 0;
+    end_time.value = exercise.end_time ?? 0
     timer_duration.value = exercise.timer_duration ?? 0
     updateId.value = exercise.id ?? 0
   } else {
-    clearFields(false) // Clear internal fields without re-emitting
+    clearFields(false)
   }
 }, { immediate: true })
+
+async function handleAction() {
+  if (updateId.value) {
+    await updateExercise()
+  } else {
+    await createExercise()
+  }
+}
 
 async function updateExercise() {
   if (!updateId.value || !isFormValid.value || isLoading.value) return
@@ -129,7 +132,6 @@ async function updateExercise() {
 
     clearFields()
     emit('exerciseUpdate')
-
   } catch (err) {
     console.error('Något gick fel', err)
     error.value = 'Ett nätverksfel uppstod'
@@ -164,7 +166,6 @@ async function createExercise() {
 
     clearFields()
     emit('exerciseUpdate')
-
   } catch (err) {
     console.error('Något gick fel', err)
     error.value = 'Ett nätverksfel uppstod'

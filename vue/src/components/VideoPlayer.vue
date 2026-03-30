@@ -3,17 +3,14 @@
     class="relative w-full aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
     <div ref="playerElement" class="w-full h-full"></div>
 
-    <!-- Transparent Click Overlay -->
     <div class="absolute inset-0 z-10 bg-transparent"></div>
 
-    <!-- Loading Overlay -->
     <div v-if="isLoading"
       class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white gap-4">
       <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       <p class="font-medium animate-pulse text-blue-200">Preparing Exercise...</p>
     </div>
 
-    <!-- Error Overlay -->
     <div v-if="error"
       class="absolute inset-0 flex flex-col items-center justify-center bg-red-900/90 text-white p-6 text-center">
       <span class="text-4xl mb-2">⚠️</span>
@@ -38,9 +35,9 @@ const isLoading = ref(true)
 const error = ref('')
 const loopInterval = ref<number | null>(null)
 
-// YouTube API Singleton Loader
 let apiPromise: Promise<void> | null = null
-const loadYouTubeAPI = (): Promise<void> => {
+
+function loadYouTubeAPI(): Promise<void> {
   if (apiPromise) return apiPromise
 
   apiPromise = new Promise((resolve) => {
@@ -64,15 +61,14 @@ const loadYouTubeAPI = (): Promise<void> => {
   return apiPromise
 }
 
-// Improved Video ID Extraction
-const getVideoId = (url: string): string | null => {
+function getVideoId(url: string): string | null {
   if (!url) return null
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/
   const match = url.match(regExp)
   return match && match[2].length === 11 ? match[2] : null
 }
 
-const initPlayer = async () => {
+async function initPlayer() {
   if (!props.exercise) return
 
   try {
@@ -87,7 +83,6 @@ const initPlayer = async () => {
 
     if (!playerElement.value) return
 
-    // Ensure previous player is destroyed before re-creating if needed
     if (player.value && player.value.destroy) {
       player.value.destroy()
     }
@@ -122,45 +117,40 @@ const initPlayer = async () => {
   }
 }
 
-const onPlayerReady = (event: any) => {
+function onPlayerReady(event: any) {
   isLoading.value = false
   
-  // Use seekTo for sub-second precision
   if (props.exercise) {
     event.target.seekTo(props.exercise.start_time, true)
   }
   
   event.target.playVideo()
-  // Some browsers block autoplay unless muted
-  if (event.target.getPlayerState() !== 1) { // 1 = Playing
+  if (event.target.getPlayerState() !== 1) {
     event.target.mute()
     event.target.playVideo()
   }
   startLoop()
 }
 
-const onPlayerStateChange = (event: any) => {
-  // YT.PlayerState.PLAYING = 1, ENDED = 0
+function onPlayerStateChange(event: any) {
   if (event.data === 1) {
     isLoading.value = false
     startLoop()
   } else if (event.data === 0) {
-    // Video ended naturally, jump back with sub-second precision
     if (props.exercise) {
       event.target.seekTo(props.exercise.start_time, true)
       event.target.playVideo()
     }
-  } else if (event.data === 3) { // BUFFERING
+  } else if (event.data === 3) {
     isLoading.value = true
   }
 }
 
-const startLoop = () => {
+function startLoop() {
   stopLoop()
 
   if (!props.exercise || props.exercise.end_time <= 0) return
 
-  // Tighter interval for precision (100ms)
   loopInterval.value = window.setInterval(() => {
     if (!player.value || !player.value.getCurrentTime) return
 
@@ -174,14 +164,13 @@ const startLoop = () => {
   }, 100)
 }
 
-const stopLoop = () => {
+function stopLoop() {
   if (loopInterval.value) {
     clearInterval(loopInterval.value)
     loopInterval.value = null
   }
 }
 
-// Watch for exercise changes to switch video
 watch(() => props.exercise?.id, async (newId) => {
   if (!newId || !props.exercise) return
 

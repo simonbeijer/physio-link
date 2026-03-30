@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-4 p-4">
-    <!-- Notifications -->
     <div v-if="error"
       class="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm font-medium animate-in fade-in slide-in-from-top-1">
       {{ error }}
@@ -11,7 +10,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Left: Exercise Library -->
       <Card>
         <CardHeader>
           <CardTitle>Exercise library</CardTitle>
@@ -35,7 +33,6 @@
         </CardContent>
       </Card>
 
-      <!-- Right: Current Schema Queue -->
       <Card>
         <CardHeader>
           <CardTitle>Schema — Exercises</CardTitle>
@@ -87,8 +84,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-vue-next'
-import { type Exercise, type SchemaExercise } from '@/types';
-
+import { type Exercise, type SchemaExercise } from '@/types'
 
 const props = defineProps<{
   schemaId: number
@@ -101,8 +97,20 @@ const isSaving = ref(false)
 const error = ref('')
 const success = ref('')
 
-// Fetch all exercises from library
-const fetchExercises = async () => {
+const filteredExercises = computed(() => {
+  if (!searchQuery.value) return exercises.value
+  const query = searchQuery.value.toLowerCase()
+  return exercises.value.filter(ex =>
+    ex.name.toLowerCase().includes(query)
+  )
+})
+
+onMounted(async () => {
+  await fetchExercises()
+  await fetchSchemaExercises()
+})
+
+async function fetchExercises() {
   error.value = ''
   try {
     const response = await apiFetch('/api/exercises')
@@ -118,14 +126,12 @@ const fetchExercises = async () => {
   }
 }
 
-const fetchSchemaExercises = async () => {
+async function fetchSchemaExercises() {
   error.value = ''
   try {
     const response = await apiFetch(`/api/schemas/${props.schemaId}/exercises`)
     if (response.ok) {
       const data = await response.json()
-
-      // Ensure we only add defined exercises
       schemaExercises.value = data.exercises
         .map((se: SchemaExercise) => se.exercise)
         .filter((ex: Exercise | undefined) => !!ex)
@@ -138,31 +144,18 @@ const fetchSchemaExercises = async () => {
   }
 }
 
-onMounted(async () => {
-  await fetchExercises()
-  await fetchSchemaExercises()
-})
-
-const filteredExercises = computed(() => {
-  if (!searchQuery.value) return exercises.value
-  const query = searchQuery.value.toLowerCase()
-  return exercises.value.filter(ex =>
-    ex.name.toLowerCase().includes(query)
-  )
-})
-
-const addExercise = (exercise: Exercise) => {
+function addExercise(exercise: Exercise) {
   if (!exercise) return
   schemaExercises.value.push({ ...exercise })
   success.value = ''
 }
 
-const removeExercise = (index: number) => {
+function removeExercise(index: number) {
   schemaExercises.value.splice(index, 1)
   success.value = ''
 }
 
-const saveSchema = async () => {
+async function saveSchema() {
   isSaving.value = true
   error.value = ''
   success.value = ''
@@ -196,7 +189,6 @@ const saveSchema = async () => {
 </script>
 
 <style scoped>
-/* Custom scrollbar styling using standard CSS variables (matching Shadcn theme) */
 ::-webkit-scrollbar {
   width: 6px;
 }
