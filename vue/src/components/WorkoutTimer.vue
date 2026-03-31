@@ -1,19 +1,37 @@
 <template>
-  <div class="flex flex-row items-center gap-3 sm:gap-6 p-3 sm:p-6 bg-white rounded-2xl border shadow-sm w-full max-w-md">
-    <div class="flex flex-col gap-3 sm:gap-10 items-center min-w-[80px] sm:min-w-[120px]">
-      <Button :variant="isActive ? 'outline' : 'default'" size="lg"
-        class="h-9 sm:h-12 w-20 sm:w-32 rounded-full font-bold transition-all shadow-md active:scale-95 text-[10px] sm:text-base"
-        :class="isActive ? 'bg-white border-orange-500 text-orange-600 hover:bg-orange-50' : 'bg-blue-600 hover:bg-blue-700'"
+  <div 
+    class="flex flex-row items-center gap-3"
+    :class="variant === 'minimal' ? '' : 'p-3 sm:p-6 bg-white rounded-2xl border shadow-sm w-full max-w-md'"
+  >
+    <div 
+      class="flex flex-col items-center gap-1"
+      :class="variant === 'minimal' ? '' : 'sm:gap-10 min-w-[80px] sm:min-w-[120px]'"
+    >
+      <Button :variant="isActive ? 'outline' : 'default'" 
+        :size="variant === 'minimal' ? 'sm' : 'lg'"
+        class="rounded-full font-bold transition-all shadow-md active:scale-95"
+        :class="[
+          isActive ? 'bg-white border-orange-500 text-orange-600 hover:bg-orange-50' : 'bg-blue-600 hover:bg-blue-700',
+          variant === 'minimal' ? 'h-8 w-16 text-[9px]' : 'h-9 sm:h-12 w-20 sm:w-32 text-[10px] sm:text-base'
+        ]"
         @click="toggleTimer">
-        <component :is="isActive ? Pause : Play" class="w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2 fill-current" />
+        <component :is="isActive ? Pause : Play" 
+          :class="variant === 'minimal' ? 'w-2 h-2 mr-1' : 'w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2'" 
+          class="fill-current" 
+        />
         {{ isActive ? 'Pause' : 'Start' }}
       </Button>
-      <Button variant="outline" size="icon" class="h-8 w-8 sm:h-12 sm:w-12 rounded-full border-2" @click="resetTimer">
-        <RotateCcw class="w-3 h-3 sm:w-4 sm:h-4" />
+      <Button variant="outline" size="icon" 
+        :class="variant === 'minimal' ? 'h-6 w-6' : 'h-8 w-8 sm:h-12 sm:w-12 border-2'"
+        class="rounded-full" @click="resetTimer">
+        <RotateCcw :class="variant === 'minimal' ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4'" />
       </Button>
     </div>
 
-    <div class="relative w-24 h-24 sm:w-48 sm:h-48 flex-shrink-0">
+    <div 
+      class="relative flex-shrink-0"
+      :class="variant === 'minimal' ? 'w-16 h-16' : 'w-24 h-24 sm:w-48 sm:h-48'"
+    >
       <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
         <circle class="text-slate-100 stroke-current" stroke-width="8" fill="transparent" r="45" cx="50" cy="50" />
         <circle class="transition-all duration-1000 ease-linear stroke-current"
@@ -24,7 +42,10 @@
           }" />
       </svg>
       <div class="absolute inset-0 flex items-center justify-center">
-        <span class="text-xl sm:text-4xl font-mono font-black tabular-nums text-slate-900">
+        <span 
+          class="font-mono font-black tabular-nums text-slate-900"
+          :class="variant === 'minimal' ? 'text-sm' : 'text-xl sm:text-4xl'"
+        >
           {{ timeLeft }}s
         </span>
       </div>
@@ -39,6 +60,7 @@ import { Play, Pause, RotateCcw } from 'lucide-vue-next'
 
 const props = defineProps<{
   duration: number
+  variant?: 'default' | 'minimal'
 }>()
 
 const emit = defineEmits<{
