@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property string $youtube_url
- * @property int $start_time
- * @property int $end_time
+ * @property float $start_time
+ * @property float $end_time
  * @property int $timer_duration
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
