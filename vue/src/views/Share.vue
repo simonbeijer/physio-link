@@ -12,7 +12,19 @@
         <Button @click="restart" size="lg" class="rounded-full px-8 bg-blue-600 font-bold text-white">Kör igen</Button>
       </div>
 
-      <div v-else-if="currentExercise" class="w-full max-w-sm flex flex-col items-center">
+      <div v-else-if="currentExercise" class="w-full max-w-sm flex flex-col items-center relative">
+        <!-- Metadata Overlay on Video -->
+        <div class="absolute top-4 left-4 z-20 pointer-events-none">
+          <span v-if="schema" class="bg-blue-600/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+            {{ schema.name }}
+          </span>
+        </div>
+        <div class="absolute top-4 right-4 z-20 pointer-events-none">
+          <span class="bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md">
+            {{ currentExercise.name }}
+          </span>
+        </div>
+
         <div class="w-full px-2">
           <VideoPlayer :exercise="currentExercise" />
         </div>
@@ -26,33 +38,30 @@
 
     <!-- Combined Bottom Bar -->
     <div v-if="currentExercise && !isCompleted"
-      class="fixed bottom-0 left-0 right-0 p-3 bg-white/80 backdrop-blur-lg border-t border-slate-100 shadow-2xl z-50">
-      <div class="max-w-md mx-auto space-y-3">
-        <div class="flex items-center justify-between px-1">
-          <div class="flex flex-col">
-            <h1 v-if="schema" class="text-[8px] font-bold text-blue-600 uppercase tracking-widest leading-none mb-1">{{
-              schema.name }}</h1>
-            <h2 class="text-sm font-black text-slate-900 truncate max-w-[200px]">{{ currentExercise.name }}</h2>
-          </div>
-          <div class="text-right">
-            <p class="text-[10px] text-slate-400 font-black tabular-nums">{{ currentIndex + 1 }} / {{ exercises.length
-              }}</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4">
+      class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-slate-100 shadow-2xl z-50">
+      <div class="max-w-md mx-auto flex items-center gap-4">
+        <!-- Timer -->
+        <div class="flex-shrink-0">
           <WorkoutTimer 
             :key="currentIndex" 
             :duration="currentExercise.timer_duration"
             variant="minimal" 
             @finished="timerFinished = true" 
           />
+        </div>
 
-          <Button @click="nextExercise" size="lg"
-            class="flex-grow h-12 text-base rounded-2xl shadow-lg active:scale-95 transition-all bg-blue-600 hover:bg-blue-700 text-white font-black">
-            {{ isLastExercise ? 'Slutför' : 'Nästa' }}
-            <ArrowRight class="ml-2 w-5 h-5 stroke-[3px]" />
-          </Button>
+        <!-- Next Button -->
+        <Button @click="nextExercise" size="lg"
+          class="flex-grow h-14 text-base rounded-2xl shadow-lg active:scale-95 transition-all bg-blue-600 hover:bg-blue-700 text-white font-black">
+          {{ isLastExercise ? 'Slutför' : 'Nästa' }}
+          <ArrowRight class="ml-2 w-5 h-5 stroke-[3px]" />
+        </Button>
+
+        <!-- Progress Counter (Bottom Right) -->
+        <div class="flex-shrink-0">
+          <p class="text-[10px] text-slate-400 font-black tabular-nums bg-slate-100 px-2 py-1 rounded-md">
+            {{ currentIndex + 1 }} / {{ exercises.length }}
+          </p>
         </div>
       </div>
     </div>
