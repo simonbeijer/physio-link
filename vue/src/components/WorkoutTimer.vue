@@ -4,7 +4,7 @@
     :class="variant === 'minimal' ? '' : 'p-3 sm:p-6 bg-white rounded-2xl border shadow-sm w-full max-w-md'"
   >
     <div 
-      class="flex flex-col items-center gap-1"
+      class="flex flex-col items-center gap-2"
       :class="variant === 'minimal' ? '' : 'sm:gap-10 min-w-[80px] sm:min-w-[120px]'"
     >
       <Button :variant="isActive ? 'outline' : 'default'" 
@@ -21,10 +21,12 @@
         />
         {{ isActive ? 'Pause' : 'Start' }}
       </Button>
+      
+      <!-- Larger Reset Button -->
       <Button variant="outline" size="icon" 
-        :class="variant === 'minimal' ? 'h-6 w-6' : 'h-8 w-8 sm:h-12 sm:w-12 border-2'"
+        :class="variant === 'minimal' ? 'h-8 w-8' : 'h-10 w-10 sm:h-14 sm:w-14 border-2'"
         class="rounded-full" @click="resetTimer">
-        <RotateCcw :class="variant === 'minimal' ? 'w-3 h-3' : 'w-3 h-3 sm:w-4 sm:h-4'" />
+        <RotateCcw :class="variant === 'minimal' ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'" />
       </Button>
     </div>
 
