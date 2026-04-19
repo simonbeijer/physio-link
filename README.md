@@ -13,7 +13,7 @@ docker-compose up -d
 
 ## 🛠 Tech Stack
 
-- **Backend:** Laravel 11 (REST API)
+- **Backend:** Laravel 12 (REST API)
 - **Frontend:** Vue 3 + Tailwind CSS + Shadcn/Vue
 - **Player:** Custom YouTube loop integration
 - **Infra:** Docker (Nginx, PHP-FPM, MySQL)
