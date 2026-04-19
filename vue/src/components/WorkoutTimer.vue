@@ -1,68 +1,46 @@
 <template>
-  <div 
-    class="flex flex-row items-center gap-3"
-    :class="variant === 'minimal' ? '' : 'p-3 sm:p-6 bg-white rounded-2xl border shadow-sm w-full max-w-md'"
-  >
-    <div 
-      class="flex flex-col items-center gap-2"
-      :class="variant === 'minimal' ? '' : 'sm:gap-10 min-w-[80px] sm:min-w-[120px]'"
+  <div class="flex items-center gap-2 shrink-0">
+    <button
+      @click="toggleTimer"
+      class="h-9 w-9 rounded-full flex items-center justify-center transition-colors shrink-0"
+      :class="isActive ? 'bg-orange-100 text-orange-600' : 'bg-blue-600 text-white'"
+      :aria-label="isActive ? 'Pausa' : 'Starta'"
     >
-      <Button :variant="isActive ? 'outline' : 'default'" 
-        :size="variant === 'minimal' ? 'sm' : 'lg'"
-        class="rounded-full font-bold transition-all shadow-md active:scale-95"
-        :class="[
-          isActive ? 'bg-white border-orange-500 text-orange-600 hover:bg-orange-50' : 'bg-blue-600 hover:bg-blue-700',
-          variant === 'minimal' ? 'h-8 w-16 text-[9px]' : 'h-9 sm:h-12 w-20 sm:w-32 text-[10px] sm:text-base'
-        ]"
-        @click="toggleTimer">
-        <component :is="isActive ? Pause : Play" 
-          :class="variant === 'minimal' ? 'w-2 h-2 mr-1' : 'w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2'" 
-          class="fill-current" 
-        />
-        {{ isActive ? 'Pause' : 'Start' }}
-      </Button>
-      
-      <!-- Larger Reset Button -->
-      <Button variant="outline" size="icon" 
-        :class="variant === 'minimal' ? 'h-8 w-8' : 'h-10 w-10 sm:h-14 sm:w-14 border-2'"
-        class="rounded-full" @click="resetTimer">
-        <RotateCcw :class="variant === 'minimal' ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'" />
-      </Button>
-    </div>
+      <component :is="isActive ? Pause : Play" class="w-3.5 h-3.5 fill-current" />
+    </button>
 
-    <div 
-      class="relative flex-shrink-0"
-      :class="variant === 'minimal' ? 'w-16 h-16' : 'w-24 h-24 sm:w-48 sm:h-48'"
-    >
-      <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+    <div class="relative w-14 h-14 shrink-0">
+      <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
         <circle class="text-slate-100 stroke-current" stroke-width="8" fill="transparent" r="45" cx="50" cy="50" />
-        <circle class="transition-all duration-1000 ease-linear stroke-current"
-          :class="timeLeft < 10 ? 'text-orange-500' : 'text-blue-600'" stroke-width="8" stroke-linecap="round"
-          fill="transparent" r="45" cx="50" cy="50" :style="{
-            strokeDasharray: `${strokeDasharray}`,
-            strokeDashoffset: `${strokeDasharray - progress}`
-          }" />
+        <circle
+          class="stroke-current"
+          :class="timeLeft < 10 ? 'text-orange-500' : 'text-blue-600'"
+          stroke-width="8" stroke-linecap="round" fill="transparent"
+          r="45" cx="50" cy="50"
+          :style="{ strokeDasharray, strokeDashoffset: strokeDasharray - progress }"
+        />
       </svg>
       <div class="absolute inset-0 flex items-center justify-center">
-        <span 
-          class="font-mono font-black tabular-nums text-slate-900"
-          :class="variant === 'minimal' ? 'text-sm' : 'text-xl sm:text-4xl'"
-        >
-          {{ timeLeft }}s
-        </span>
+        <span class="text-xs font-mono font-bold tabular-nums text-slate-900">{{ timeLeft }}s</span>
       </div>
     </div>
+
+    <button
+      @click="resetTimer"
+      class="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 shrink-0"
+      aria-label="Återställ"
+    >
+      <RotateCcw class="w-3.5 h-3.5" />
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted, computed } from 'vue'
-import { Button } from '@/components/ui/button'
 import { Play, Pause, RotateCcw } from 'lucide-vue-next'
 
 const props = defineProps<{
   duration: number
-  variant?: 'default' | 'minimal'
 }>()
 
 const emit = defineEmits<{
@@ -79,21 +57,18 @@ const progress = computed(() => {
 })
 
 function playFinishSound() {
-  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-  const oscillator = audioContext.createOscillator()
-  const gainNode = audioContext.createGain()
-
-  oscillator.connect(gainNode)
-  gainNode.connect(audioContext.destination)
-
-  oscillator.type = 'sine'
-  oscillator.frequency.setValueAtTime(880, audioContext.currentTime)
-  gainNode.gain.setValueAtTime(0, audioContext.currentTime)
-  gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.1)
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-
-  oscillator.start(audioContext.currentTime)
-  oscillator.stop(audioContext.currentTime + 0.5)
+  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(880, ctx.currentTime)
+  gain.gain.setValueAtTime(0, ctx.currentTime)
+  gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1)
+  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5)
+  osc.start(ctx.currentTime)
+  osc.stop(ctx.currentTime + 0.5)
 }
 
 function startTimer() {
@@ -128,7 +103,7 @@ function resetTimer() {
   timeLeft.value = props.duration
 }
 
-watch(() => props.duration, (newDuration) => {
+watch(() => props.duration, () => {
   resetTimer()
 }, { immediate: true })
 

@@ -1,21 +1,20 @@
 <template>
-  <div
-    class="relative w-full aspect-[9/16] max-w-[400px] mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white">
-    <div ref="playerElement" class="w-full h-full"></div>
+  <!-- Self-contained 9:16 video. Parent must have defined width + height. -->
+  <div class="w-full h-full [container-type:size] flex items-center justify-center">
+    <div
+      class="relative aspect-[9/16] max-h-full mx-auto bg-black rounded-2xl overflow-hidden shadow-lg border-2 border-white"
+      style="width: min(100%, 56.25cqh)"
+    >
+      <div ref="playerElement" class="absolute inset-0"></div>
+      <div class="absolute inset-0 z-10 bg-transparent"></div>
 
-    <div class="absolute inset-0 z-10 bg-transparent"></div>
+      <div v-if="isLoading" class="absolute inset-0 flex items-center justify-center bg-black">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
 
-    <div v-if="isLoading"
-      class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white gap-4">
-      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-      <p class="font-medium animate-pulse text-blue-200">Preparing Exercise...</p>
-    </div>
-
-    <div v-if="error"
-      class="absolute inset-0 flex flex-col items-center justify-center bg-red-900/90 text-white p-6 text-center">
-      <span class="text-4xl mb-2">⚠️</span>
-      <p class="font-bold text-xl">{{ error }}</p>
-      <p class="text-sm text-red-200 mt-2">The video could not be loaded. Please check the YouTube link.</p>
+      <div v-if="error" class="absolute inset-0 flex flex-col items-center justify-center bg-red-900/90 text-white p-6 text-center">
+        <p class="font-bold">{{ error }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -119,11 +118,11 @@ async function initPlayer() {
 
 function onPlayerReady(event: any) {
   isLoading.value = false
-  
+
   if (props.exercise) {
     event.target.seekTo(props.exercise.start_time, true)
   }
-  
+
   event.target.playVideo()
   if (event.target.getPlayerState() !== 1) {
     event.target.mute()

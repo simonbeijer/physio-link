@@ -16,11 +16,11 @@
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
+    <main class="max-w-7xl mx-auto px-4 py-4 sm:py-8">
       <div v-if="selectedSchema" class="mb-8 flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Edit Schema</h1>
-          <p class="text-slate-500 text-lg mt-1">{{ selectedSchema.name }}</p>
+          <h1 class="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Edit Schema</h1>
+          <p class="text-slate-500 text-base sm:text-lg mt-1">{{ selectedSchema.name }}</p>
         </div>
         <Button variant="outline" @click="selectedSchema = null" class="bg-white">
           <ChevronLeft class="w-4 h-4 mr-2" />
@@ -35,8 +35,8 @@
       </div>
 
       <div v-else-if="!selectedSchema" class="mb-10">
-        <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
-        <p class="text-slate-500 text-lg">Manage your exercise programs and share them with clients.</p>
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Welcome Back</h1>
+        <p class="text-slate-500 text-base sm:text-lg">Manage your exercise programs and share them with clients.</p>
       </div>
 
       <div v-if="selectedSchema" class="transition-all duration-300">
@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         <div class="space-y-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -56,7 +56,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
+          <div class="bg-white rounded-2xl border shadow-sm p-4 sm:p-6 overflow-hidden">
             <SchemasList :schemas="schemas" @edit="selectedSchema = $event" @delete="deleteSchema" />
 
             <Accordion type="single" collapsible class="mt-6 border-t pt-2">
@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-2xl border shadow-sm p-6 overflow-hidden">
+          <div class="bg-white rounded-2xl border shadow-sm p-4 sm:p-6 overflow-hidden">
             <ExercisesList :exercises="exercises" @delete="deleteExercise" @edit="handleEditExercise" />
 
             <Accordion v-model="openAccordion" type="single" collapsible class="mt-6 border-t pt-2">
