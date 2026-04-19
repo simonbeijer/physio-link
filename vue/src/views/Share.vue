@@ -1,5 +1,5 @@
 <template>
-  <div class="h-dvh flex flex-col bg-slate-50 overflow-hidden max-w-md mx-auto">
+  <div class="h-dvh flex flex-col bg-slate-50 overflow-hidden max-w-2xl mx-auto">
 
     <!-- Error -->
     <div v-if="error" class="flex-1 flex items-center justify-center p-4">
