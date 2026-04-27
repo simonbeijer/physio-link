@@ -1,0 +1,42 @@
+# VCS
+.git
+.gitignore
+.github
+
+# Frontend (deployed separately, e.g. Vercel)
+vue
+**/node_modules
+
+# Local dev infra
+docker
+docker-compose.yml
+
+# Env / secrets — Render injects at runtime
+.env
+.env.*
+src/.env
+src/.env.*
+
+# Composer deps — rebuilt inside image
+src/vendor
+
+# Laravel runtime cruft
+src/storage/logs/*
+src/storage/framework/cache/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+src/storage/framework/testing/*
+!src/storage/logs/.gitignore
+!src/storage/framework/cache/.gitignore
+!src/storage/framework/sessions/.gitignore
+!src/storage/framework/views/.gitignore
+
+# Tests not needed in prod image
+src/tests
+
+# Docs
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
