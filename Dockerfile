@@ -63,6 +63,7 @@ RUN { \
         echo 'sed -ri "s/:80>/:${PORT}>/" /etc/apache2/sites-enabled/000-default.conf'; \
         echo 'php artisan config:cache'; \
         echo 'php artisan migrate --force'; \
+        echo 'php artisan db:seed --force'; \
         echo 'exec apache2-foreground'; \
     } > /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start.sh
