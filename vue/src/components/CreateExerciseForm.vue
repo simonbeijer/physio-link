@@ -43,7 +43,17 @@
           <Save class="w-4 h-4 mr-2" />
           {{ isLoading ? 'Sparar...' : 'Spara övning' }}
         </Button>
-        
+
+        <Button
+          variant="outline"
+          @click="previewOpen = true"
+          :disabled="!youtube_url.trim()"
+          class="h-12 border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800 px-6"
+        >
+          <Eye class="w-4 h-4 mr-2" />
+          Förhandsvisa
+        </Button>
+
         <Button variant="outline" @click="clearFields" class="h-12 border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 px-6">
           <XCircle class="w-4 h-4 mr-2" />
           Rensa
@@ -51,16 +61,26 @@
       </div>
       <p v-if="error" class="text-sm text-red-600 font-medium ml-1 mt-2">{{ error }}</p>
     </div>
+
+    <PreviewExerciseModal
+      v-model:open="previewOpen"
+      :name="name"
+      :youtube-url="youtube_url"
+      v-model:start-time="start_time"
+      v-model:end-time="end_time"
+      v-model:timer-duration="timer_duration"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import PreviewExerciseModal from '@/components/PreviewExerciseModal.vue'
 import { apiFetch } from '@/lib/api'
 import { type Exercise } from '@/types'
 import { ref, watch, computed } from 'vue'
-import { XCircle, Save, CheckCircle } from 'lucide-vue-next'
+import { XCircle, Save, CheckCircle, Eye } from 'lucide-vue-next'
 
 const props = defineProps<{
   exercise: Exercise | null
@@ -79,6 +99,7 @@ const timer_duration = ref(0)
 const updateId = ref(0)
 const isLoading = ref(false)
 const error = ref('')
+const previewOpen = ref(false)
 
 const isFormValid = computed(() => {
   return name.value.trim() !== '' && 

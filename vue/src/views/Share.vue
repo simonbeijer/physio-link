@@ -14,11 +14,30 @@
       <Button @click="restart" class="rounded-full px-6 bg-blue-600 text-white font-bold">Kör igen</Button>
     </div>
 
-    <!-- Loading -->
-    <div v-else-if="!currentExercise" class="flex-1 flex flex-col items-center justify-center gap-3">
-      <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      <p class="text-xs font-medium text-slate-400">Laddar schema...</p>
-    </div>
+    <!-- Loading skeleton -->
+    <template v-else-if="!currentExercise">
+      <div class="flex-1 min-h-0 px-2 pt-2 pb-1 relative">
+        <div class="w-full h-full rounded-xl bg-slate-200 animate-pulse"></div>
+        <div class="absolute top-4 left-4 z-20">
+          <div class="h-5 w-24 bg-blue-300/70 rounded-md animate-pulse"></div>
+        </div>
+        <div class="absolute top-4 right-4 z-20">
+          <div class="h-5 w-20 bg-slate-400/60 rounded-md animate-pulse"></div>
+        </div>
+        <div class="absolute bottom-3 right-4 z-20">
+          <div class="h-5 w-10 bg-slate-400/60 rounded-md animate-pulse"></div>
+        </div>
+        <div v-if="loadingMessage" class="absolute inset-x-0 bottom-1/2 translate-y-1/2 flex justify-center pointer-events-none">
+          <p class="text-xs font-medium text-slate-600 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+            {{ loadingMessage }}
+          </p>
+        </div>
+      </div>
+      <div class="shrink-0 px-4 py-3 bg-white border-t border-slate-100 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-slate-200 animate-pulse"></div>
+        <div class="flex-1 h-12 rounded-xl bg-slate-200 animate-pulse"></div>
+      </div>
+    </template>
 
     <!-- Active workout -->
     <template v-else>
@@ -59,7 +78,7 @@
 
 <script setup lang="ts">
 import { apiFetch } from '@/lib/api'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { type Schema, type SchemaExercise } from '@/types'
 import Button from '@/components/ui/button/Button.vue'
@@ -81,6 +100,24 @@ const currentExercise = computed(() => {
   return exercises.value[currentIndex.value]?.exercise
 })
 
+// Render free tier cold-starts: progressive messaging keeps user oriented during boot
+const loadingMessage = ref('')
+const loadingTimers: number[] = []
+
+function startLoadingMessages() {
+  loadingTimers.push(window.setTimeout(() => loadingMessage.value = 'Laddar schema...', 3000))
+  loadingTimers.push(window.setTimeout(() => loadingMessage.value = 'Servern vaknar — tar några sekunder första gången', 10000))
+  loadingTimers.push(window.setTimeout(() => loadingMessage.value = 'Snart klart...', 25000))
+}
+
+function clearLoadingMessages() {
+  loadingTimers.forEach(clearTimeout)
+  loadingTimers.length = 0
+  loadingMessage.value = ''
+}
+
+onUnmounted(clearLoadingMessages)
+
 const isLastExercise = computed(() => {
   return currentIndex.value === exercises.value.length - 1
 })
@@ -91,7 +128,9 @@ watch(currentIndex, () => {
 
 onMounted(async () => {
   error.value = ''
+  startLoadingMessages()
   await getExercises()
+  clearLoadingMessages()
 })
 
 async function getExercises() {
