@@ -65,7 +65,39 @@
 
       <!-- Controls -->
       <div class="shrink-0 px-4 py-3 bg-white border-t border-slate-100 flex items-center gap-3">
-        <WorkoutTimer :key="currentIndex" :duration="currentExercise.timer_duration" @finished="timerFinished = true" />
+        <WorkoutTimer
+          :key="currentIndex"
+          :duration="currentExercise.timer_duration"
+          :auto-start="autoMode"
+          @finished="onTimerFinished"
+        />
+        <button
+          type="button"
+          role="switch"
+          :aria-checked="autoMode"
+          @click="autoMode = !autoMode"
+          class="flex flex-col items-center gap-0.5 shrink-0"
+          aria-label="Auto-läge"
+        >
+          <span
+            class="relative w-10 h-6 rounded-full transition-colors"
+            :class="autoMode ? 'bg-green-500' : 'bg-slate-300'"
+          >
+            <span
+              class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white flex items-center justify-center transition-transform"
+              :class="autoMode ? 'translate-x-4' : ''"
+            >
+              <Play
+                class="w-2.5 h-2.5 fill-current"
+                :class="autoMode ? 'text-green-600' : 'text-slate-400'"
+              />
+            </span>
+          </span>
+          <span
+            class="text-[9px] font-bold uppercase tracking-wider"
+            :class="autoMode ? 'text-green-600' : 'text-slate-500'"
+          >Auto</span>
+        </button>
         <Button @click="nextExercise"
           class="flex-1 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base">
           {{ isLastExercise ? 'Slutför' : 'Nästa' }}
@@ -84,7 +116,7 @@ import { type Schema, type SchemaExercise } from '@/types'
 import Button from '@/components/ui/button/Button.vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
 import WorkoutTimer from '@/components/WorkoutTimer.vue'
-import { ArrowRight } from 'lucide-vue-next'
+import { ArrowRight, Play } from 'lucide-vue-next'
 
 const route = useRoute()
 const share_token = route.params.share_token
@@ -94,7 +126,16 @@ const exercises = ref<SchemaExercise[]>([])
 const error = ref('')
 const currentIndex = ref(0)
 const isCompleted = ref(false)
-const timerFinished = ref(false)
+const autoMode = ref(false)
+let autoAdvanceTimer: number | null = null
+
+function onTimerFinished() {
+  if (!autoMode.value) return
+  autoAdvanceTimer = window.setTimeout(() => {
+    nextExercise()
+    autoAdvanceTimer = null
+  }, 3000)
+}
 
 const currentExercise = computed(() => {
   return exercises.value[currentIndex.value]?.exercise
@@ -116,14 +157,20 @@ function clearLoadingMessages() {
   loadingMessage.value = ''
 }
 
-onUnmounted(clearLoadingMessages)
+onUnmounted(() => {
+  clearLoadingMessages()
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer)
+})
 
 const isLastExercise = computed(() => {
   return currentIndex.value === exercises.value.length - 1
 })
 
 watch(currentIndex, () => {
-  timerFinished.value = false
+  if (autoAdvanceTimer) {
+    clearTimeout(autoAdvanceTimer)
+    autoAdvanceTimer = null
+  }
 })
 
 onMounted(async () => {

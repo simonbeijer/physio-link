@@ -2,16 +2,11 @@
   <div class="flex items-center gap-2 shrink-0">
     <button
       @click="toggleTimer"
-      class="h-9 w-9 rounded-full flex items-center justify-center transition-colors shrink-0"
-      :class="isActive ? 'bg-orange-100 text-orange-600' : 'bg-blue-600 text-white'"
+      class="relative w-16 h-16 shrink-0 flex items-center justify-center group"
       :aria-label="isActive ? 'Pausa' : 'Starta'"
     >
-      <component :is="isActive ? Pause : Play" class="w-3.5 h-3.5 fill-current" />
-    </button>
-
-    <div class="relative w-14 h-14 shrink-0">
-      <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-        <circle class="text-slate-100 stroke-current" stroke-width="8" fill="transparent" r="45" cx="50" cy="50" />
+      <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+        <circle class="text-slate-200 stroke-current" stroke-width="8" fill="transparent" r="45" cx="50" cy="50" />
         <circle
           class="stroke-current"
           :class="timeLeft < 10 ? 'text-orange-500' : 'text-blue-600'"
@@ -20,28 +15,43 @@
           :style="{ strokeDasharray, strokeDashoffset: strokeDasharray - progress }"
         />
       </svg>
-      <div class="absolute inset-0 flex items-center justify-center">
-        <span class="text-xs font-mono font-bold tabular-nums text-slate-900">{{ timeLeft }}s</span>
+      <span
+        v-if="!isActive"
+        class="absolute inset-2 rounded-full bg-blue-600/20 animate-ping"
+        aria-hidden="true"
+      />
+      <div
+        class="relative w-10 h-10 rounded-full flex items-center justify-center shadow-md ring-2 ring-white transition-colors"
+        :class="isActive ? 'bg-orange-500' : 'bg-blue-600'"
+      >
+        <component :is="isActive ? Pause : Play"
+          class="w-5 h-5 fill-white text-white"
+          :class="{ 'translate-x-[1px]': !isActive }"
+        />
       </div>
-    </div>
+      <span class="absolute bottom-0.5 text-[9px] font-mono font-bold tabular-nums text-slate-700 bg-white/80 px-1 rounded">{{ timeLeft }}s</span>
+    </button>
 
     <button
       @click="resetTimer"
-      class="h-8 w-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 shrink-0"
+      class="h-10 w-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-700 shrink-0"
       aria-label="Återställ"
     >
-      <RotateCcw class="w-3.5 h-3.5" />
+      <RotateCcw class="w-4 h-4" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onUnmounted, computed } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { Play, Pause, RotateCcw } from 'lucide-vue-next'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   duration: number
-}>()
+  autoStart?: boolean
+}>(), {
+  autoStart: false,
+})
 
 const emit = defineEmits<{
   (e: 'finished'): void
@@ -106,6 +116,10 @@ function resetTimer() {
 watch(() => props.duration, () => {
   resetTimer()
 }, { immediate: true })
+
+onMounted(() => {
+  if (props.autoStart) startTimer()
+})
 
 onUnmounted(() => {
   stopTimer()

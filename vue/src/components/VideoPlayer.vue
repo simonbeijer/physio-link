@@ -93,6 +93,7 @@ async function initPlayer() {
       playerVars: {
         autoplay: 1,
         controls: 0,
+        disablekb: 1,
         modestbranding: 1,
         rel: 0,
         iv_load_policy: 3,
