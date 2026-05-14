@@ -22,7 +22,7 @@
       />
       <div
         class="relative w-10 h-10 rounded-full flex items-center justify-center shadow-md ring-2 ring-white transition-colors"
-        :class="isActive ? 'bg-orange-500' : 'bg-blue-600'"
+        :class="'bg-blue-600'"
       >
         <component :is="isActive ? Pause : Play"
           class="w-5 h-5 fill-white text-white"
