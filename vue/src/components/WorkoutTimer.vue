@@ -68,17 +68,24 @@ const progress = computed(() => {
 
 function playFinishSound() {
   const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-  osc.type = 'sine'
-  osc.frequency.setValueAtTime(880, ctx.currentTime)
-  gain.gain.setValueAtTime(0, ctx.currentTime)
-  gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1)
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5)
-  osc.start(ctx.currentTime)
-  osc.stop(ctx.currentTime + 0.5)
+  const now = ctx.currentTime
+  const notes = [
+    { freq: 587.33, start: 0,    dur: 0.35 },
+    { freq: 880.00, start: 0.18, dur: 0.55 },
+  ]
+  notes.forEach(({ freq, start, dur }) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(freq, now + start)
+    gain.gain.setValueAtTime(0, now + start)
+    gain.gain.linearRampToValueAtTime(0.3, now + start + 0.02)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + start + dur)
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start(now + start)
+    osc.stop(now + start + dur)
+  })
 }
 
 function startTimer() {
