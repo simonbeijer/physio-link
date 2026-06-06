@@ -1,5 +1,8 @@
 <template>
-  <div class="h-dvh flex flex-col bg-slate-50 overflow-hidden max-w-2xl mx-auto">
+  <div
+    class="h-dvh flex flex-col bg-slate-50 overflow-hidden max-w-2xl mx-auto"
+    @click.capture.once="acquireWakeLock"
+  >
 
     <!-- Error -->
     <div v-if="error" class="flex-1 flex items-center justify-center p-4">
@@ -128,6 +131,31 @@ const currentIndex = ref(0)
 const isCompleted = ref(false)
 const autoMode = ref(false)
 let autoAdvanceTimer: number | null = null
+let wakeLock: WakeLockSentinel | null = null
+
+async function acquireWakeLock() {
+  try {
+    if ('wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen')
+      wakeLock.addEventListener('release', () => { wakeLock = null })
+    }
+  } catch {
+    // Unsupported or denied — silently ignore
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release().catch(() => {})
+    wakeLock = null
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible' && !isCompleted.value) {
+    acquireWakeLock()
+  }
+}
 
 function onTimerFinished() {
   if (!autoMode.value) return
@@ -160,6 +188,8 @@ function clearLoadingMessages() {
 onUnmounted(() => {
   clearLoadingMessages()
   if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  releaseWakeLock()
 })
 
 const isLastExercise = computed(() => {
@@ -175,9 +205,14 @@ watch(currentIndex, () => {
 
 onMounted(async () => {
   error.value = ''
+  document.addEventListener('visibilitychange', handleVisibilityChange)
   startLoadingMessages()
   await getExercises()
   clearLoadingMessages()
+})
+
+watch(isCompleted, (done) => {
+  if (done) releaseWakeLock()
 })
 
 async function getExercises() {

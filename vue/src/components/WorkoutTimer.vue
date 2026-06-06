@@ -66,8 +66,27 @@ const progress = computed(() => {
   return (timeLeft.value / props.duration) * strokeDasharray
 })
 
+let audioCtx: AudioContext | null = null
+
+function ensureAudioCtx(): AudioContext | null {
+  try {
+    if (!audioCtx) {
+      const Ctor = window.AudioContext || (window as any).webkitAudioContext
+      if (!Ctor) return null
+      audioCtx = new Ctor()
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume()
+    }
+    return audioCtx
+  } catch {
+    return null
+  }
+}
+
 function playFinishSound() {
-  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  const ctx = ensureAudioCtx()
+  if (!ctx) return
   const now = ctx.currentTime
   const notes = [
     { freq: 587.33, start: 0,    dur: 0.35 },
@@ -111,6 +130,7 @@ function stopTimer() {
 }
 
 function toggleTimer() {
+  ensureAudioCtx()
   if (isActive.value) stopTimer()
   else startTimer()
 }
