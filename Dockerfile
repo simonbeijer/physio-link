@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.3.36-apache
 
 # System libs for PHP extensions + composer
 RUN apt-get update && apt-get install -y --no-install-recommends \
